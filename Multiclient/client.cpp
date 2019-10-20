@@ -1,6 +1,6 @@
 /*
-  source: DZONE.com 
-  
+  source: DZONE.com
+
   compiling using
   g++ client.cpp -lpthread -o client
 
@@ -34,22 +34,22 @@ void * cientThread(void *arg)
   struct sockaddr_in serverAddr;    //sendSockAddr
   bzero((char*)&serverAddr, sizeof(serverAddr));
   socklen_t addr_size;
-  // Create the socket. 
+  // Create the socket.
   clientSocket = socket(AF_INET, SOCK_STREAM, 0);
   //Configure settings of the server address
- // Address family is Internet 
+ // Address family is Internet
   serverAddr.sin_family = AF_INET;
-  //Set port number, using htons function 
+  //Set port number, using htons function
   serverAddr.sin_port = htons(9009);
  //Set IP address to localhost
-  serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  serverAddr.sin_addr.s_addr = inet_addr("192.168.137.126");
   // memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
     //Connect the socket to the server using the address
     addr_size = sizeof(serverAddr);
     int status = connect(clientSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
     if(status < 0)
     {
-        cout<<"Error connecting to socket!"<<endl; 
+        cout<<"Error connecting to socket!"<<endl;
 		exit(0);
     }
 

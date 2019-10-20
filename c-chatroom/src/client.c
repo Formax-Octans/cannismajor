@@ -13,7 +13,7 @@
 #include "string.h"
 
 // Global variables
-volatile sig_atomic_t flag = 0;
+volatile sig_atomic_t flag = 0;/////fuck
 int sockfd = 0;
 char nickname[LENGTH_NAME] = {};
 
@@ -79,18 +79,21 @@ int main(int argc, char const *argv[])
 
     // Socket information
     struct sockaddr_in server_info, client_info;
+    struct hostent *server;
     int s_addrlen = sizeof(server_info);
     int c_addrlen = sizeof(client_info);
     memset(&server_info, 0, s_addrlen);
     memset(&client_info, 0, c_addrlen);
-    server_info.sin_family = PF_INET;
+    bzero((char *) &server_info, sizeof(server_info));
+    // server_info.sin_family = PF_INET;
+    server_info.sin_family = AF_INET;
     // server_info.sin_addr.s_addr = inet_addr("127.0.0.1");
-    struct hostent *server;
+
     server = gethostbyname(argv[1]);
     // server_info.sin_addr.s_addr = inet_addr("127.0.0.1");
     bcopy((char *)server->h_addr,  (char *)&server_info.sin_addr.s_addr,  server->h_length);
     server_info.sin_port = htons(8888);
-    server_info.sin_addr.s_addr = inet_addr("127.0.0.1");
+    // server_info.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     // Connect to Server
     int err = connect(sockfd, (struct sockaddr *)&server_info, s_addrlen);
