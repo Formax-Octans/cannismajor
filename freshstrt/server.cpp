@@ -8,8 +8,15 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <iostream>
+#include <map>
+#include "proto.h"
+using namespace std;
 
 
+// #include<sqlite3.h>
+
+//conment after done with server.h
 typedef struct ClientNode {
     int data;
     struct ClientNode* prev;
@@ -28,10 +35,54 @@ ClientList *newNode(int sockfd, char* ip) {
     return np;
 }
 
+std::map<char *, ClientList *> map12;   //user node data
+
 
 int server_sockfd = 0, client_sockfd = 0;
 ClientList *root, *now;
 
+
+
+void catch_ctrl_c_and_exit(int sig) {
+    ClientList *tmp;
+    while (root != NULL) {
+        printf("\nClose socketfd: %d\n", root->data);
+        close(root->data); // close all socket include server_sockfd
+        tmp = root;
+        root = root->link;
+        free(tmp);
+    }
+    printf("Bye\n");
+    exit(EXIT_SUCCESS);
+}
+
+
+void addMap(ClientNode *c)
+{
+  //check whtether user is correct
+  // enter password
+
+
+  string strint;
+  std::cin >> strint;
+  int n = strint.length();
+  char name[n+1];
+  strcpy(name, strint.c_str());
+  // gets(name)
+
+  if(map12.count(name)==1)
+  {
+    map12[name] = c;
+
+  }
+  else
+  {
+    perror("failed ");
+    exit(0);
+  }
+
+
+}
 
 
 void send_to_all_clients(ClientList *np, char tmp_buffer[])
@@ -46,7 +97,7 @@ void send_to_all_clients(ClientList *np, char tmp_buffer[])
     }
 }
 
-void client_handler(void *p_client)
+void *client_handler(void *p_client)
 {
 
   int leave_flag = 0;
@@ -65,6 +116,23 @@ void client_handler(void *p_client)
       send_to_all_clients(np, send_buffer);
   }
 
+  // while (1)
+  // {
+  //
+  //     // if (leave_flag)
+  //     // {
+  //     //     break;
+  //     // }
+  //
+  //
+  // }
+  //
+
+  close(np->data);
+free(np);
+
+pthread_exit(0);
+
 
 }
 
@@ -77,7 +145,7 @@ int main(int argc, char const *argv[])
 {
 
   //handle signal
-
+  signal(SIGINT, catch_ctrl_c_and_exit);
 
   server_sockfd = socket(AF_INET,SOCK_STREAM,0);
   if (server_sockfd == -1)
@@ -104,9 +172,10 @@ int main(int argc, char const *argv[])
   getsockname(server_sockfd, (struct sockaddr*) &server_info, (socklen_t*) &s_addrlen);
 
   printf("Start Server on: %s:%d\n", inet_ntoa(server_info.sin_addr), ntohs(server_info.sin_port));
-
-  root = newNode(server_sockfd, inet_ntoa(server_info.sin_addr));
-  now = root;
+// int x;
+// std::cin >> x;
+  // root = newNode(server_sockfd, inet_ntoa(server_info.sin_addr));
+  // now = root;
 
 
   while (1)
@@ -114,16 +183,18 @@ int main(int argc, char const *argv[])
       client_sockfd = accept(server_sockfd, (struct sockaddr*) &client_info, (socklen_t*) &c_addrlen);
 
       getpeername(client_sockfd, (struct sockaddr*) &client_info, (socklen_t*) &c_addrlen);
-      printf("Client %s:%d come in.\n", inet_ntoa(client_info.sin_addr), ntohs(client_info.sin_port));
+      printf("Client user %s:%d come in.\n", inet_ntoa(client_info.sin_addr), ntohs(client_info.sin_port));
       printf("Reached here");
 
       ClientList *c = newNode(client_sockfd, inet_ntoa(client_info.sin_addr));
-      c->prev = now;
-      now->link = c;
-      now = c;
-
+      // // ClientList *c = addMap(client_sockfd, inet_ntoa(client_info.sin_addr));
+      // c->prev = now;
+      // now->link = c;
+      // now = c;
+      addMap(c);
       pthread_t tid;
-      if (pthread_create(&tid,NULL,(void *)client_handler, (void *)c) != 0)
+      // if (pthread_create(&tid,NULL,(void *)client_handler, (void *)c) != 0)
+      if (pthread_create(&tid,NULL,client_handler, (void *)c) != 0)
       {
         perror("Create pthread error!\n");
         exit(EXIT_FAILURE);
