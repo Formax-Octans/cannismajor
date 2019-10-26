@@ -99,7 +99,8 @@ void send_to_all_clients(ClientList *np, char tmp_buffer[])
 
 void *client_handler(void *p_client)
 {
-
+char *menu[] = {"1. Enter the fle name you are sending",NULL};
+int menulenght = 1;
   int leave_flag = 0;
   char nickname[LENGTH_NAME] = {};
   char recv_buffer[LENGTH_MSG] = {};
@@ -113,21 +114,11 @@ void *client_handler(void *p_client)
       strncpy(np->name, nickname, LENGTH_NAME);
       printf("%s(%s)(%d) join the chatroom.\n", np->name, np->ip, np->data);
       sprintf(send_buffer, "%s(%s) join the chatroom.", np->name, np->ip);
-      send_to_all_clients(np, send_buffer);
+      // send_to_all_clients(np, send_buffer);
   }
-
-  // while (1)
-  // {
-  //
-  //     // if (leave_flag)
-  //     // {
-  //     //     break;
-  //     // }
-  //
-  //
-  // }
-  //
-
+//send menu
+send(np->data,&menu[0],sizeof(menu),0);
+send(np->data,&menulenght,sizeof(int),0);
   close(np->data);
 free(np);
 
@@ -161,7 +152,7 @@ int main(int argc, char const *argv[])
   int c_addrlen = sizeof(client_info);
   memset(&server_info, 0, s_addrlen);
   memset(&client_info, 0, c_addrlen);
-  server_info.sin_family = PF_INET;
+  server_info.sin_family = AF_INET;
   server_info.sin_addr.s_addr = INADDR_ANY;
   server_info.sin_port = htons(8888);
 
@@ -185,6 +176,7 @@ int main(int argc, char const *argv[])
       getpeername(client_sockfd, (struct sockaddr*) &client_info, (socklen_t*) &c_addrlen);
       printf("Client user %s:%d come in.\n", inet_ntoa(client_info.sin_addr), ntohs(client_info.sin_port));
       printf("Reached here");
+      //
 
       ClientList *c = newNode(client_sockfd, inet_ntoa(client_info.sin_addr));
       // // ClientList *c = addMap(client_sockfd, inet_ntoa(client_info.sin_addr));

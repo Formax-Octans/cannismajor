@@ -1,0 +1,3 @@
+g++ newserver.cpp -o tmpsver -lpthread
+
+g++ tempclent.cpp -o clent string.o
