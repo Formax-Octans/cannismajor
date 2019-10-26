@@ -216,7 +216,6 @@ int main(int argc, char const *argv[])
       int c1;
       char c2;
 
-
       if (menu_option==1)
       {
 
