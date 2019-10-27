@@ -320,9 +320,7 @@ void gotomyslbinder(dataset ds)
     {
         if(ds.status == 1)
         {
-            /*
-            enter the query here for view
-            */
+            
         }
     }
     else
@@ -394,7 +392,7 @@ void *client_handler(void *p_client)
         // std::cout << "1" <<parsedcommand.info1<< '\n';
         // std::cout << "2" <<parsedcommand.info2<< '\n';
         // std::cout << "3" <<parsedcommand.command_name<< '\n';
-        // gotomyslbinder(parsedcommand);
+        gotomyslbinder(parsedcommand);
         // if(ifyoufail()==1){dont();}
 
     }

@@ -28,7 +28,7 @@ CREATE TABLE FileDB (
  Size double NOT NULL,
  uid int,
  Flag int,
- Fileptr varchar(255),
+ Filepath varchar(255) NOT NULL UNIQUE,
  PRIMARY KEY (pid),
  FOREIGN KEY (uid) REFERENCES UserDB(uid)
 );

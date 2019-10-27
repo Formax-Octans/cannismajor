@@ -138,7 +138,7 @@ int main(int argc, char const *argv[])
     //recieving menu
     sleep(5);
     system("clear");
-    std::cout << "-------------------WELCOME TO DROPSHIT-------------" << '\n'<<endl<<endl;
+    std::cout << "----------------------------WELCOME TO DROPSHIT-----------------------" << '\n'<<endl<<endl;
     recv(sockfd, menu,MAXBUFFERSIEZ,0 );
     printf("\n%s\n",menu);
 
