@@ -25,6 +25,11 @@
 // #include "parser1.h"  //also function command parser
 using namespace std;
 int SIGN_IN_FLAG = 0 ;
+int CURRENTUID = -1;
+string CURRENT_USERNAME = "";
+
+
+
 struct dataset
 {
    string info1;
@@ -71,6 +76,36 @@ return str1;
 }
 
 
+
+void SHOW_BASE_DES()
+{
+  sleep(5);
+  system("clear");
+  std::cout << "----------------------------WELCOME TO DROPSHIT-----------------------" << '\n'<<endl<<endl;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //commanding parsing
 
 
@@ -103,15 +138,17 @@ dataset parser(string command)
 //    string command;
     cout << "the commands is "<<command<<endl;
 //    getline (cin, command);
-
+    command+=" ";
     vector<string> words;
     words = split(command," ");
     int n = words.size();
-    // for (int i = 0;i<n;i++)
-    // {
-    //     cout << words[i] << endl;
-    // }
-    //datset initialisation
+    std::cout << "  n"<<n << '\n';
+    for (int i = 0;i<n;i++)
+    {
+        cout << words[i] << endl;
+    }
+    // cout<<"1"<<endl;
+    // datset initialisation
     dataset ds;
     //for account set up
     if(words[0].compare("account")==0)
@@ -122,14 +159,14 @@ dataset parser(string command)
         ds.command_name = "account";
         ds.status = 1;
     }
-    else if(words[0].compare("sign_in")==0)
-    {
-
-        ds.info1 = words[1];
-        ds.info2 = words[2];
-        ds.command_name = "sign_in";
-        ds.status = 1;
-    }
+    // else if(words[0].compare("sign_in")==0)
+    // {
+    //
+    //     ds.info1 = words[1];
+    //     ds.info2 = words[2];
+    //     ds.command_name = "sign_in";
+    //     ds.status = 1;
+    // }
     else if(words[0].compare("upload")==0)
     {
 
@@ -255,6 +292,8 @@ string initialview()
           // printf("\n");
           str1+="\n";
   }
+   mysql_free_result(result);
+  mysql_close(con);
 
   return str1;
 
@@ -269,8 +308,21 @@ string initialview()
 
 void gotomyslbinder(dataset ds)
 {
+
+MYSQL *con = mysql_init(NULL);
+
+if (con == NULL)
+{
+    fprintf(stderr, "mysql_init() failed\n");
+    exit(1);
+}
+if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 0) == NULL)
+{
+    finish_with_error(con);
+}
+
     string c_name = ds.command_name;
-    if(c_name.compare("upload"))
+    if(c_name.compare("upload")==0)
     {
         if(ds.status == 1)
         {
@@ -280,7 +332,7 @@ void gotomyslbinder(dataset ds)
         }
 
     }
-    else if(c_name.compare("download"))
+    else if(c_name.compare("download")==0)
     {
         if(ds.status == 1)
         {
@@ -289,7 +341,7 @@ void gotomyslbinder(dataset ds)
             */
         }
     }
-    else if(c_name.compare("account"))
+    else if(c_name.compare("account")==0)
     {
         if(ds.status == 1)
         {
@@ -298,7 +350,7 @@ void gotomyslbinder(dataset ds)
             */
         }
     }
-    else if(c_name.compare("sign_in"))
+    else if(c_name.compare("sign_in")==0)
     {
         if(ds.status == 1)
         {
@@ -307,7 +359,7 @@ void gotomyslbinder(dataset ds)
             */
         }
     }
-    else if(c_name.compare("delete"))
+    else if(c_name.compare("delete")==0)
     {
         if(ds.status == 1)
         {
@@ -316,17 +368,62 @@ void gotomyslbinder(dataset ds)
             */
         }
     }
-    else if(c_name.compare("view"))
+    else if(c_name.compare("view")==0)
     {
+      printf("Birchasgna\n" );
+      string str1="";
+
         if(ds.status == 1)
         {
-            
+          printf("Reachef ehroihflksdng\n" );
+
+          if (mysql_query(con, "SELECT Filename FROM FileDB where Flag = 0 ;"))
+          {
+              finish_with_error(con);
+          }
+
+
+          MYSQL_RES *result = mysql_store_result(con);
+
+          if (result == NULL)
+          {
+              finish_with_error(con);
+
+          }
+
+          int num_fields = mysql_num_fields(result);
+
+          MYSQL_ROW row;
+
+          while ((row = mysql_fetch_row(result)))
+          {
+              for(int i = 0; i < num_fields; i++)
+              {
+                  // printf("%s ", row[i] ? row[i] : "NULL");
+                  str1+= row[i] ? row[i] : "NULL";
+
+              }
+                  // printf("\n");
+                  str1+="\n";
+          }
+
+          //harman update view manager
+
+          // return str1;
+          // printf("%s\n",str1 );
+            std::cout << str1 << '\n';
+          //check status whethe signed it
+
+          mysql_free_result(result);
+
+
         }
     }
     else
     {
         printf("NOT FOUND\n");
     }
+     mysql_close(con);
 
 }
 
@@ -387,11 +484,11 @@ void *client_handler(void *p_client)
 
 
         sendtofu = chartostring(recv_buffer,strlen(recv_buffer));
-        // std::cout << "Recieved buffer " <<sendtofu<< '\n';
+        std::cout << "Recieved buffer " <<sendtofu<< '\n';
         parsedcommand = parser(sendtofu);
-        // std::cout << "1" <<parsedcommand.info1<< '\n';
-        // std::cout << "2" <<parsedcommand.info2<< '\n';
-        // std::cout << "3" <<parsedcommand.command_name<< '\n';
+        std::cout << "1" <<parsedcommand.info1<< '\n';
+        std::cout << "2" <<parsedcommand.info2<< '\n';
+        std::cout << "3" <<parsedcommand.command_name<< '\n';
         gotomyslbinder(parsedcommand);
         // if(ifyoufail()==1){dont();}
 

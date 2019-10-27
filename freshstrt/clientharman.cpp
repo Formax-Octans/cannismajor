@@ -41,7 +41,13 @@ char nickname[LENGTH_NAME] = {};
 
 
 
+void SHOW_BASE_DES()
+{
+  sleep(5);
+  system("clear");
+  std::cout << "----------------------------WELCOME TO DROPSHIT-----------------------" << '\n'<<endl<<endl;
 
+}
 
 
 string chartostring(char arra[],int n0)
@@ -136,8 +142,7 @@ int main(int argc, char const *argv[])
     char inoput[100];
 
     //recieving menu
-    sleep(5);
-    system("clear");
+    SHOW_BASE_DES();
     std::cout << "----------------------------WELCOME TO DROPSHIT-----------------------" << '\n'<<endl<<endl;
     recv(sockfd, menu,MAXBUFFERSIEZ,0 );
     printf("\n%s\n",menu);
