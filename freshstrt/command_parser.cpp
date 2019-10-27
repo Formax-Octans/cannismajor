@@ -1,14 +1,15 @@
-#include<iostream> 
+#include<iostream>
 #include<stdio.h>
-#include<string> // for string class 
+#include<string> // for string class
 #include<string.h>
 #include<vector>
-using namespace std; 
+// #include "parser1.h"
+using namespace std;
 
 struct dataset
 {
    string info1;
-   string info2; 
+   string info2;
    string command_name;
    int status = 0;
 };
@@ -29,12 +30,12 @@ vector<string> split(const string& str, const string& delim)
     return tokens;
 }
 
-dataset parser()
+dataset parser(string command)
 {
-    string command;
-    cout << "Please enter \n"; 
-    getline (cin, command); 
-    
+//    string command;
+    cout << "the commands is "<<command<<endl;
+//    getline (cin, command);
+
     vector<string> words;
     words = split(command," ");
     int n = words.size();
@@ -47,7 +48,7 @@ dataset parser()
     //for account set up
     if(words[0].compare("account")==0)
     {
-        
+
         ds.info1 = words[1];
         ds.info2 = words[2];
         ds.command_name = "account";
@@ -55,7 +56,7 @@ dataset parser()
     }
     else if(words[0].compare("sign_in")==0)
     {
-        
+
         ds.info1 = words[1];
         ds.info2 = words[2];
         ds.command_name = "sign_in";
@@ -63,7 +64,7 @@ dataset parser()
     }
     else if(words[0].compare("upload")==0)
     {
-        
+
         ds.info1 = words[1];
         ds.info2 = words[2];
         ds.command_name = "upload";
@@ -71,7 +72,7 @@ dataset parser()
     }
     else if(words[0].compare("download")==0)
     {
-        
+
         ds.info1 = words[1];
         ds.info2 = words[2];
         ds.command_name = "download";
@@ -115,10 +116,10 @@ dataset parser()
     return ds;
 }
 
-int main()
-{
-    dataset d;
-    d = parser();
-    cout << d.command_name;
-    return 0;
-}
+//int main()
+//{
+//    dataset d;
+//    d = parser();
+//    cout << d.command_name;
+//    return 0;
+//}

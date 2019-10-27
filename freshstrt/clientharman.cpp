@@ -42,6 +42,38 @@ char nickname[LENGTH_NAME] = {};
 
 
 
+
+
+string chartostring(char arra[],int n0)
+{
+  string str1="";
+  int i;
+  for ( i = 0; i!=n0; i++)
+  {
+    str1 += arra[i];
+  }
+str1 += '\0';
+return str1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void catch_ctrl_c_and_exit(int sig) {
     flag = 1;
 }
@@ -106,6 +138,7 @@ int main(int argc, char const *argv[])
     //recieving menu
     sleep(5);
     system("clear");
+    std::cout << "-------------------WELCOME TO DROPSHIT-------------" << '\n'<<endl<<endl;
     recv(sockfd, menu,MAXBUFFERSIEZ,0 );
     printf("\n%s\n",menu);
 
@@ -118,7 +151,9 @@ int main(int argc, char const *argv[])
           {
             printf("Bye\n" );
             break;
+
           }
+
 
     }
 

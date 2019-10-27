@@ -1,0 +1,31 @@
+DROP DATABASE nimbus;
+
+DROP TABLE UserDB;
+
+DROP TABLE FileDB;
+
+
+
+CREATE DATABASE nimbus;
+
+USE nimbus;
+
+CREATE TABLE UserDB (
+ uid INT AUTO_INCREMENT,
+ Username varchar(100) NOT NULL UNIQUE,
+ Password varchar(100) NOT NULL,
+ Memory_left double NOT NULL,
+ PRIMARY KEY (uid)
+);
+
+CREATE TABLE FileDB (
+ pid INT AUTO_INCREMENT,
+ Filename varchar(255) NOT NULL UNIQUE,
+ Size int NOT NULL,
+ uid int,
+ Flag int,
+ Fileptr varchar(255),
+ PRIMARY KEY (pid),
+ FOREIGN KEY (uid) REFERENCES UserDB(uid)
+);
+
