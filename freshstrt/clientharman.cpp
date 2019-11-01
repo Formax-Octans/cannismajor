@@ -65,7 +65,7 @@ string chartostring(char arra[],int n0)
   {
     str1 += arra[i];
   }
-str1 += '\0';
+// str1 += '\0';
 return str1;
 }
 
@@ -92,7 +92,7 @@ dataset parserprinter(string command,int locaksocket1)
 //    string command;
     char printout[MAXBUFFERSIEZ];
     string printoutsgtr;
-    cout << "the commands is "<<command<<endl;
+    // cout << "the commands is "<<command<<endl;
 //    getline (cin, command);
     // command+=" ";
     vector<string> words;
@@ -106,23 +106,24 @@ dataset parserprinter(string command,int locaksocket1)
     // cout<<"1"<<endl;
     // datset initialisation
     dataset ds;
-    //for account set up
-    if(words[0].compare("account")==0)
+    //for sign_up set up
+    if(words[0].compare("sign_up")==0)
     {
 
         ds.info1 = words[1];
         ds.info2 = words[2];
-        ds.command_name = "account";
+        ds.command_name = "sign_up";
         ds.status = 1;
     }
-    // else if(words[0].compare("sign_in")==0)
-    // {
-    //
-    //     ds.info1 = words[1];
-    //     ds.info2 = words[2];
-    //     ds.command_name = "sign_in";
-    //     ds.status = 1;
-    // }
+    else if(words[0].compare("clear")==0)
+    {
+
+        ds.info1 = "null";
+        ds.info2 = "null";
+        ds.command_name = "clear";
+        ds.status = 1;
+        // system("clear");
+    }
     else if(words[0].compare("upload")==0)
     {
 
@@ -192,9 +193,44 @@ dataset parserprinter(string command,int locaksocket1)
 
 
 
+int send_throughsocket(char arr1[],int lenght,int sockfd1)
+{
+  // send(sockfd, inoput, sizecommand1*sizeof(char), 0);
+  int i = 0;
+  char c123;
+  while (i<lenght)
+  {
+    c123 = arr1[i];
+    send(sockfd1,&c123,sizeof(char),0);
+    i++;
+
+  }
+
+return 0;
+
+}
 
 
 
+int recv_throughsocket(char arr1[],int lenght,int sockfd1)
+{
+  // send(sockfd, inoput, sizecommand1*sizeof(char), 0);
+  int i = 0;
+  char c123;
+  while (i<lenght)
+  {
+
+    recv(sockfd1,&c123,sizeof(char),0);
+    arr1[i] = c123;
+    // std::cout << "Rceving "<<c123<<":" << '\n';
+
+    i++;
+
+  }
+  arr1[i] = '\0';
+  return 0;
+
+}
 
 
 
@@ -269,39 +305,49 @@ int main(int argc, char const *argv[])
     printf("Connect to Server: %s:%d\n", inet_ntoa(server_info.sin_addr), ntohs(server_info.sin_port));
     printf("You are: %s:%d\n", inet_ntoa(client_info.sin_addr), ntohs(client_info.sin_port));
 
-    char inoput[LENGTH_NAME];
+    char inoput[MAXBUFFERSIEZ];
     string inoputstring;
     struct dataset parsedcommand;
     char recievemainmessage[MAXBUFFERSIEZ];
     char c1;
     string recievemainmessagestr="";
     int recievemainmessagestrlength= 0;
-    int flagtemp=0;
-
+    int flagtemp=0,sizecommand1;
+    int receivemenulength1;
     //recieving menu
     SHOW_BASE_DES();//basic design
     // std::cout << "----------------------------WELCOME TO DROPSHIT-----------------------" << '\n'<<endl<<endl;
-    recv(sockfd, menu,MAXBUFFERSIEZ,0 );
-    printf("\n%s\n",menu);
+    recv(sockfd,&receivemenulength1,sizeof(int),0 );
+    // recv(sockfd,menu,sizeof(char)*receivemenulength1,0 );
+    std::cout << "menu leght"<<receivemenulength1 << '\n';
+    recv_throughsocket(menu,receivemenulength1,sockfd);
 
+    printf("\n%s\n",menu);
     while (1)
     {
           printf(">> " );
           cin.getline(inoput,MAXBUFFERSIEZ);
-          send(sockfd, inoput, LENGTH_NAME, 0);
+          // send(sockfd, inoput, sizeof(inoput), 0);
+          sizecommand1 = strlen(inoput);
+          send(sockfd, &sizecommand1, sizeof(int), 0);
+
+          // send(sockfd, inoput, sizecommand1*sizeof(char), 0);
+          send_throughsocket(inoput,sizecommand1,sockfd);
+
           if(inoput[0]=='e' && inoput[1]=='x' && inoput[2]=='i' && inoput[3]=='t' )
           {
             printf("Bye\n" );
             break;
 
           }
+
           inoputstring = chartostring(inoput,strlen(inoput));
           parsedcommand = parserprinter(inoputstring,sockfd);
           if (parsedcommand.command_name=="view")
           {
             fflush(stdin);
             fflush(stdout);
-            std::cout << "Utpatang" << '\n';
+            // std::cout << "Utpatang" << '\n';
           //   bzero((char*)&recievemainmessage,sizeof(recievemainmessage));
               // while(recv(sockfd,recievemainmessage,MAXBUFFERSIEZ,0))
               // {
@@ -316,18 +362,24 @@ int main(int argc, char const *argv[])
               //     break;
               //   }
               // }
-              while (recv(sockfd,&c1,sizeof(char),0))
-              {
+              // while (recv(sockfd,&c1,sizeof(char),0))
+              // {
+              //
+              //     if (c1==12)
+              //     {
+              //       break;
+              //     }
+              //
+              // }
+              // recv(sockfd,&recievemainmessage,sizeof(recievemainmessage),0);
 
-                  if (c1==12)
-                  {
-                    break;
-                  }
+              // }
+              recv(sockfd,&recievemainmessagestrlength,sizeof(int),0);
+              // recv(sockfd,recievemainmessage,recievemainmessagestrlength*sizeof(char),0);
+              recv_throughsocket(recievemainmessage,recievemainmessagestrlength,sockfd);
 
-              }
-              recv(sockfd,recievemainmessage,MAXBUFFERSIEZ,0);
 
-              std::cout << "\n\nVIEWbirth" << '\n';
+              std::cout << "\n\nFollowing public FIles" << '\n';
               std::cout << recievemainmessage << '\n';
               // for (int i = 0; recievemainmessage[i]!='\0'; i++)
               // {
@@ -369,24 +421,69 @@ int main(int argc, char const *argv[])
 
           else if (parsedcommand.command_name=="sign_in")
           {
-            fflush(stdin);
-            fflush(stdout);
+            // fflush(stdin);
+            // fflush(stdout);
             // std::cout << "Utpatang" << '\n';
-              while (recv(sockfd,&c1,sizeof(char),0))
-              {
+              // while (recv(sockfd,&c1,sizeof(char),0))
+              // {
+              //
+              //     if (c1==14)
+              //     {
+              //       break;
+              //     }
+              //
+              // }
+              recv(sockfd,&recievemainmessagestrlength,sizeof(int),0);
+              // recv(sockfd,recievemainmessage,recievemainmessagestrlength*sizeof(char),0);
+              recv_throughsocket(recievemainmessage,recievemainmessagestrlength,sockfd);
 
-                  if (c1==12)
-                  {
-                    break;
-                  }
 
-              }
-              // recv(sockfd,recievemainmessage,MAXBUFFERSIEZ,0);
-
-              std::cout << "\n\nVIEWbirth" << '\n';
+              std::cout << "\n\nSign in message" << '\n';
+              std::cout << "the message length received " << recievemainmessagestrlength<<'\n';
               std::cout << recievemainmessage << '\n';
 
           //
+          }
+          else if (parsedcommand.command_name=="sign_up")
+          {
+            // fflush(stdin);
+
+              // }
+              recv(sockfd,&recievemainmessagestrlength,sizeof(int),0);
+              // recv(sockfd,recievemainmessage,recievemainmessagestrlength*sizeof(char),0);
+              recv_throughsocket(recievemainmessage,recievemainmessagestrlength,sockfd);
+
+
+              std::cout << "\n\nSign up message" << '\n';
+              std::cout << "the message length received " << recievemainmessagestrlength<<'\n';
+              std::cout << recievemainmessage << '\n';
+
+          //
+          }
+          else if (parsedcommand.command_name=="logout")
+          {
+              recv(sockfd,&recievemainmessagestrlength,sizeof(int),0);
+              // recv(sockfd,recievemainmessage,recievemainmessagestrlength*sizeof(char),0);
+              recv_throughsocket(recievemainmessage,recievemainmessagestrlength,sockfd);
+
+
+              std::cout << "the message length received " << recievemainmessagestrlength<<'\n';
+              std::cout << recievemainmessage << '\n';
+          }
+          else if (parsedcommand.command_name=="delete")
+          {
+              recv(sockfd,&recievemainmessagestrlength,sizeof(int),0);
+              // recv(sockfd,recievemainmessage,recievemainmessagestrlength*sizeof(char),0);
+              recv_throughsocket(recievemainmessage,recievemainmessagestrlength,sockfd);
+
+
+              // std::cout << "the message length received " << recievemainmessagestrlength<<'\n';
+              std::cout << recievemainmessage << '\n';
+          }
+
+          else if (parsedcommand.command_name=="clear")
+          {
+            system("clear");
           }
 
 

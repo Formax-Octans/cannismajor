@@ -24,11 +24,15 @@
 #include "proto.h"
 // #include "parser1.h"  //also function command parser
 using namespace std;
-int SIGN_IN_FLAG = 0 ;
-int CURRENTUID = -1;
-string CURRENT_USERNAME = "";
 
 
+struct mysqlrturndata
+{
+  int SIGN_IN_FLAG ;
+  int CURRENTUID ;
+  string CURRENT_USERNAME ;
+  // string data;
+};
 
 struct dataset
 {
@@ -67,7 +71,7 @@ ClientList *root, *now;
 void stringtochar(char arra[],string ar1)
 {
   int length = ar1.length();
-  std::cout << "Thats the wau i likeit" << '\n';
+  // std::cout << "Thats the wau i likeit" << '\n';
   for (int i = 0; i < length; i++)
   {
     arra[i] = ar1[i];
@@ -85,7 +89,7 @@ string chartostring(char arra[],int n0)
   {
     str1 += arra[i];
   }
-str1 += '\0';
+// str1 += '\0';
 return str1;
 }
 
@@ -144,7 +148,7 @@ vector<string> split(const string& str, const string& delim)
         prev = pos + delim.length();
     }
     while (pos < str.length() && prev < str.length());
-    return tokens;
+      return tokens;
 }
 
 dataset parser(string command)
@@ -164,13 +168,13 @@ dataset parser(string command)
     // cout<<"1"<<endl;
     // datset initialisation
     dataset ds;
-    //for account set up
-    if(words[0].compare("account")==0)
+    //for sign_up set up
+    if(words[0].compare("sign_up")==0)
     {
 
         ds.info1 = words[1];
         ds.info2 = words[2];
-        ds.command_name = "account";
+        ds.command_name = "sign_up";
         ds.status = 1;
     }
     // else if(words[0].compare("sign_in")==0)
@@ -318,9 +322,8 @@ string initialview()
 
 
 
-
-
-string gotomyslbinder(dataset ds)
+string gotomyslbinder(dataset ds,mysqlrturndata* ds2)
+// struct mysqlrturndata gotomyslbinder(dataset ds)
 {
 
 MYSQL *con = mysql_init(NULL);
@@ -356,13 +359,88 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
             */
         }
     }
-    else if(c_name.compare("account")==0)
+    else if(c_name.compare("sign_up")==0)
     {
         if(ds.status == 1)
         {
             /*
-            enter the query here for account
+            enter the query here for sign_up
             */
+            string Username = ds.info1; //pass this string as arguments. comment this
+            string Password = ds.info2; //pass this string as arguments
+            // string Password="";
+            cout<<"username received "<<Username<<endl;
+            cout<<"Password received "<<Password<<endl;
+
+
+
+            string query = "SELECT Username FROM UserDB WHERE Username =\"" + Username + "\"";
+             //cout<<"\n query: "<<query;    checking if query is appended properly
+             if (mysql_query(con, query.c_str()))
+             {
+                 finish_with_error(con);
+             }
+
+             MYSQL_RES *result = mysql_store_result(con);
+
+             query="";
+             if (result == NULL)
+             {
+                 finish_with_error(con);
+             }
+
+             int num_fields = mysql_num_fields(result);
+
+             MYSQL_ROW row;
+
+             int found=0;    //0 means not in table
+
+             while ((row = mysql_fetch_row(result)))
+             {
+                 // cout<<"\n user: "<<row[0];       //printing table
+
+                 if(strcmp(row[0],Username.c_str())==0)
+                 {
+                     found=1;
+                     break;
+                 }
+             }
+
+             if(found==0)
+             {
+                 // string Password = "123";    //comment this when you pass arguments
+
+                 //enter username and Password in table
+
+                 query="INSERT INTO UserDB(Username, Password, Memory_left) VALUES(\""+ Username + "\",\"" + Password + "\"," + "1000)";
+
+                 // cout<<"\n query: "<<query;
+
+                 if(mysql_query(con,query.c_str()))
+                 {
+                     finish_with_error(con);
+
+                 }
+                 //see if inserted in table or not
+                 str1 = Username+ " Added successfully \n 1000 is memory I am going to kermit sewerside\n";
+
+             }
+             else
+                 {
+                   cout<<"\n Aready exists.\n ";
+                   str1 = "\n Aready exists.\n ";
+
+                  }
+
+
+
+                  mysql_free_result(result);
+
+
+
+
+
+
         }
     }
     else if(c_name.compare("sign_in")==0)
@@ -375,18 +453,37 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
 
     string Username = ds.info1; //pass this string as arguments. comment this
     string Password = ds.info2; //pass this string as arguments
+    // string Password="";
+    // cout<<"username received "<<Username<<endl;
+    // cout<<"Password received "<<Password<<endl;
+    // std::cout << Username.length() << '\n';
+    // std::cout << Password1.length() << '\n';
 
-    cout<<"username received "<<Username<<"1"<<endl;
-    cout<<"Password received "<<Password<<"1"<<endl;
-    std::cout << Username.length() << '\n';
-    std::cout << Password.length() << '\n';
+    // Password[Password.length()-1] = '\0';
+    // for (int i = 0; i < Username.length(); i++)
+    // int i10 = 0;
+    // while (i10<Password1.length()-1)
+    // {
+    //
+    //   Password += Password1.at(i10);
+    //   // std::cout << Password.at(i10) << '\n';
+    //   std::cout << Password1.at(i10) << '\n';
+    //   std::cout << "i" <<i10<< '\n';
+    //
+    //   i10++;
+    //
+    // }
+    // std::cout << Username.length() << '\n';
+    // std::cout << Password.length() << '\n';
 
-    string query = "SELECT Username, Password FROM UserDB WHERE Username =\"" + Username + "\" AND Password = \""+Password+"\"" ;
-            char queryinchar1[query.length()+1];
-            cout<<"\nSql query:"<<query<<endl;
-            Username = "Brosh_21";
-            Password = "Birth12";
-//            strncpy(queryinchar1,query.c_str(),query.length());
+    // string query = "SELECT Username, Password FROM UserDB WHERE Username =\"" + Username + "\" AND Password = \""+Password+"\" " ;
+    string query = "SELECT Username, Password ,uid FROM UserDB WHERE Username =\"" + Username + "\" AND Password = \""+Password+"\" " ;
+
+            // char queryinchar1[query.length()+1];
+            // cout<<"\nSql query:"<<query<<endl;
+            // Username = "Brosh_21";
+            // Password = "Birth12";
+           // strncpy(queryinchar1,query.c_str(),query.length());
             // stringtochar(queryinchar1,query);
             // queryinchar1[query.length()] = '\0';
 
@@ -401,14 +498,14 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
 
             MYSQL_RES *result = mysql_store_result(con);
 
-            query="";
+            // query="";
             if (result == NULL)
             {
                 finish_with_error(con);
             }
 
             int num_fields = mysql_num_fields(result);
-
+            string uid;
             MYSQL_ROW row;
 
             int found=0;    //0 means not in table
@@ -420,39 +517,167 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
                 if((strcmp(row[0],Username.c_str())==0) && (strcmp(row[1],Password.c_str())==0))
                 {
                     found=1;
+                    uid = row[2];
+                    ds2->CURRENTUID = stoi(uid);
                     break;
                 }
             }
 
             if(found==1)    //if found in table set signin flag = 1;
             {
-                SIGN_IN_FLAG = 1;
+                ds2->SIGN_IN_FLAG = 1;
 //                cout<<"\n Logged in. ";
                 str1 = "The username "+ Username +" has successfully logged in ";
-                CURRENT_USERNAME = Username;
+                std::cout << str1 << '\n';
+                ds2->CURRENT_USERNAME = Username;
             }
             else
-                str1 = "\n Incorrect Username or Password.\n ";
-                cout<<"\n Incorrect Username or Password.\n ";
+                {
+                  str1 = "\n Incorrect Username or Password.\n ";
+                  cout<<"\n Incorrect Username or Password.\n ";
+                }
 
+                mysql_free_result(result);
 
-
-
+                std::cout << "username" <<ds2->CURRENT_USERNAME<< '\n';
+                std::cout << "Userid" <<ds2->CURRENTUID<< '\n';
 
         }
     }
     else if(c_name.compare("delete")==0)
     {
-        if(ds.status == 1)
-        {
-            /*
-            enter the query here for delete
-            */
-        }
+      int uid1;
+      if(ds.status == 1)
+      {
+          /*
+          enter the query here for sign_up
+          */
+          string filename1 = ds.info1; //pass this string as arguments. comment this
+          if(ds2->SIGN_IN_FLAG==1)
+          {
+
+          // string query = "DELETE FROM FileDB WHERE Filename =\"" + filename1 + "\"";
+          string query = "SELECT uid FROM FileDB WHERE Filename =\"" + filename1 + "\"";
+
+           //cout<<"\n query: "<<query;    checking if query is appended properly
+           if (mysql_query(con, query.c_str()))
+           {
+               finish_with_error(con);
+           }
+
+           MYSQL_RES *result = mysql_store_result(con);
+
+           query="";
+           if (result == NULL)
+           {
+               finish_with_error(con);
+           }
+
+           int num_fields = mysql_num_fields(result);
+
+           MYSQL_ROW row;
+
+           int found=0;    //0 means not in table
+
+           while ((row = mysql_fetch_row(result)))
+           {
+               // cout<<"\n user: "<<row[0];       //printing table
+
+               if (row[0]=="NULL")
+               {
+                 uid1 = -1;
+
+               }
+               else
+               {
+                 uid1 = stoi(row[0]);
+               }
+
+           }
+
+           if (uid1 == -1)
+           {
+
+             query = "DELETE FROM FileDB WHERE Filename =\"" + filename1 + "\"";
+
+
+                 if (mysql_query(con, query.c_str()))
+                 {
+                     finish_with_error(con);
+                 }
+
+                 MYSQL_RES *result1 = mysql_store_result(con);
+
+                 // query="";
+                 if (result1 == NULL)
+                 {
+                     finish_with_error(con);
+                 }
+
+                 int num_fields1 = mysql_num_fields(result1);
+                 MYSQL_ROW row1;
+
+                 int found1=0;    //0 means not in table
+
+                 while ((row1 = mysql_fetch_row(result1)))
+                 {
+                     // cout<<"\n user: "<<row[0];       //printing table
+
+                     if((strcmp(row1[0],Username.c_str())==0) && (strcmp(row[1],Password.c_str())==0))
+                     {
+                         found=1;
+                         uid = row[2];
+                         ds2->CURRENTUID = stoi(uid);
+                         break;
+                     }
+                 }
+
+                 if(found==1)    //if found in table set signin flag = 1;
+                 {
+                     ds2->SIGN_IN_FLAG = 1;
+                     str1 = "The username "+ Username +" has successfully logged in ";
+                     std::cout << str1 << '\n';
+                     ds2->CURRENT_USERNAME = Username;
+                 }
+                 else
+                     {
+                       str1 = "\n Incorrect Username or Password.\n ";
+                       cout<<"\n Incorrect Username or Password.\n ";
+                     }
+
+                     mysql_free_result(result);
+
+                     std::cout << "username" <<ds2->CURRENT_USERNAME<< '\n';
+                     std::cout << "Userid" <<ds2->CURRENTUID<< '\n';
+
+
+
+
+
+
+           }
+
+           else
+           {
+              query = "DELETE FROM FileDB WHERE Filename =\"" + filename1 + "\" and uid = "+ds2->CURRENTUID ;
+
+
+           }
+
+
+                mysql_free_result(result);
+
+
+//delete the path as well
+
+          }//SIGN IN TRUE
+
+
+
+      }
     }
     else if(c_name.compare("view")==0)
     {
-      printf("Birchasgna\n" );
 
         if(ds.status == 1)
         {
@@ -510,13 +735,81 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
           mysql_free_result(result);
 
 
+          string query = "SELECT Filename FROM FileDB WHERE Flag = 1 AND uid = "+to_string(ds2->CURRENTUID) ;
+
+          //private Files
+      if(ds2->SIGN_IN_FLAG == 1)
+        {
+          str1+="\n\n\n\nPrivate\n";
+          if (mysql_query(con, query.c_str()))
+          {
+              finish_with_error(con);
+          }
+
+
+          MYSQL_RES *result = mysql_store_result(con);
+
+          if (result == NULL)
+          {
+              finish_with_error(con);
+
+          }
+
+          int num_fields = mysql_num_fields(result);
+
+          MYSQL_ROW row;
+
+          while ((row = mysql_fetch_row(result)))
+          {
+              for(int i = 0; i < num_fields; i++)
+              {
+                  // printf("%s ", row[i] ? row[i] : "NULL");
+                  str1+= row[i] ? row[i] : "NULL";
+
+              }
+                  // printf("\n");
+                  str1+="\n";
+          }
+
+
+
+          mysql_free_result(result);
+
+
+          }
+
+
+
+
+
+
+
+
+
         }
+    }
+
+    else if(c_name.compare("logout")==0)
+    {
+      if (ds2->SIGN_IN_FLAG == 0)
+      {
+        str1 = "\nNo Login\n\n";
+        std::cout << str1 << '\n';
+
+      }
+      else
+      {
+        str1 = "\nLogged out \n"+ds2->CURRENT_USERNAME;
+        ds2->SIGN_IN_FLAG = 0;
+      }
+
     }
     else
     {
         printf("NOT FOUND\n");
     }
      mysql_close(con);
+     // printf("\nds;foighreached");
      return str1; //return whatever the answer query is
 
 }
@@ -529,9 +822,43 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
 
 
 
+int recv_throughsocket(char arr1[],int lenght,int sockfd1)
+{
+  // send(sockfd, inoput, sizecommand1*sizeof(char), 0);
+  int i = 0;
+  char c123;
+  while (i<lenght)
+  {
+
+    recv(sockfd1,&c123,sizeof(char),0);
+    arr1[i] = c123;
+    i++;
+
+  }
+  arr1[i] = '\0';
+  return 0;
+
+}
 
 
 
+int send_throughsocket(char arr1[],int lenght,int sockfd1)
+{
+  // send(sockfd, inoput, sizecommand1*sizeof(char), 0);
+  int i = 0;
+  char c123;
+  while (i<lenght)
+  {
+    c123 = arr1[i];
+    // std::cout << "Sneding "<<c123<<":" << '\n';
+    send(sockfd1,&c123,sizeof(char),0);
+    i++;
+
+  }
+
+return 0;
+
+}
 
 
 
@@ -551,8 +878,14 @@ void *client_handler(void *p_client)
 {
     // char menu[] = {"1. This is a sample text where all public files are supposed be here\n"};
     char menu[1000];
-
+    int SIGN_IN_FLAG = 0 ;
+    int CURRENTUID = -1;
+    string CURRENT_USERNAME = "";
     // int menulenght = 1;
+    struct mysqlrturndata recevfromsql;
+    recevfromsql.CURRENT_USERNAME = "";
+    recevfromsql.CURRENTUID = 0;
+    recevfromsql.SIGN_IN_FLAG = 0;
 
     int leave_flag = 0;
     int option_recv = -1;
@@ -566,15 +899,24 @@ void *client_handler(void *p_client)
     char sendmainmessage[MAXBUFFERSIEZ];
     struct dataset parsedcommand;
     int i1 = 0,sendatatoserverlen=0;
-    char c12 = 12;
+    int commandlenght1 = 0;
+    int lengthofmenu = 0;
     printf("\nReached here bruh\n" );
     intialsenddata = initialview();//tamper with menu
       strcpy(menu, intialsenddata.c_str());
-      send(np->data,menu,sizeof(menu),0);
+      lengthofmenu = strlen(menu);
+      send(np->data,&lengthofmenu,sizeof(int),0);
+      // send(np->data,menu,sizeof(menu),0);
+      send_throughsocket(menu,lengthofmenu,np->data);
+
     while (1)
     {
-        recv(np->data,recv_buffer,LENGTH_NAME,0);
-        printf("Command recieved  %s\n", recv_buffer );
+        // recv(np->data,recv_buffer,sizeof(recv_buffer),0);
+        recv(np->data,&commandlenght1,sizeof(int),0);
+
+        // recv(np->data,recv_buffer,sizeof(char)*commandlenght1,0);
+        recv_throughsocket(recv_buffer,commandlenght1,np->data);
+        printf("Command recieved  %s of length %d \n", recv_buffer ,commandlenght1);
         if(recv_buffer[0]=='e' && recv_buffer[1]=='x' && recv_buffer[2]=='i' && recv_buffer[3]=='t' )
         {
           printf("Bye\n" );
@@ -589,16 +931,21 @@ void *client_handler(void *p_client)
         // std::cout << "2" <<parsedcommand.info2<< '\n';
         // std::cout << "3" <<parsedcommand.command_name<< '\n';
         // parsedcommand.command_name+=" ";
-        sendatatoserver = gotomyslbinder(parsedcommand);//execute
+        sendatatoserver = gotomyslbinder(parsedcommand,&recevfromsql);//execute
 
+
+        std::cout << "String :"<<sendatatoserver << '\n';
         // @test begins
-            strncpy(sendmainmessage,sendatatoserver.c_str(),sendatatoserver.length());
+            // strncpy(sendmainmessage,sendatatoserver.c_str(),sendatatoserver.length());
+            strcpy(sendmainmessage,sendatatoserver.c_str());
+
             // for ( int i = 0; i < sendatatoserver.length(); i++)//same as below for loop
         // for ( int i = 0; sendmainmessage[i]!='\0'; i++)
         // {
         //       printf("i= %d  sendmainmessage= %d sendmainmessage= %c  \n",i,sendmainmessage[i],sendmainmessage[i] );
         //
         // }
+        std::cout << "Character:"<<sendmainmessage << '\n';
         if (parsedcommand.command_name=="view")
         {
           printf("\nChecked reaahces\n" );
@@ -635,24 +982,73 @@ void *client_handler(void *p_client)
 
         //clear buffer
 
-        send(np->data,&c12,sizeof(char),0);
-        send(np->data,sendmainmessage,MAXBUFFERSIEZ,0);
+        // send(np->data,&c12,sizeof(char),0);
+        // send(np->data,&sendmainmessage,sizeof(sendmainmessage),0);
+        sendatatoserverlen = strlen(sendmainmessage);
+        // send(np->data,&sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
+        // send(np->data,&sendatatoserverlen,sizeof(int),0);
+        // send(np->data,&sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
+
+
+        send(np->data,&sendatatoserverlen,sizeof(int),0);
+        // send(np->data,sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
+        send_throughsocket(sendmainmessage,sendatatoserverlen,np->data);
+
         // send(np->data,test12,sizeof(char*),0);
       }
-      else if (parsedcommand.command_name=="view")
+      else if (parsedcommand.command_name=="sign_in")
       {
-        printf("\nChecked reaahces\n" );
-        fflush(stdin);
-        fflush(stdout);
+        printf("\nChecked reaahcfgfdges\n" );
+        // fflush(stdin);
+        // fflush(stdout);
 
 
       //clear buffer
-
-      send(np->data,&c12,sizeof(char),0);
-      send(np->data,sendmainmessage,MAXBUFFERSIEZ,0);
+      std::cout << sendmainmessage << '\n';
+      // send(np->data,&c12,sizeof(char),0);
+      // send(np->data,&sendmainmessage,MAXBUFFERSIEZ,0);
+      // send(np->data,&sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
+      sendatatoserverlen = strlen(sendmainmessage);
+      // send(np->data,&sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
+      send(np->data,&sendatatoserverlen,sizeof(int),0);
+      // send(np->data,sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
+      send_throughsocket(sendmainmessage,sendatatoserverlen,np->data);
       // send(np->data,test12,sizeof(char*),0);
     }
 
+    else if (parsedcommand.command_name=="sign_up")
+    {
+      // fflush(stdin);
+      // fflush(stdout);
+
+
+    //clear buffer
+    std::cout << sendmainmessage << '\n';
+    // send(np->data,&c12,sizeof(char),0);
+    // send(np->data,&sendmainmessage,MAXBUFFERSIEZ,0);
+    // send(np->data,&sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
+    sendatatoserverlen = strlen(sendmainmessage);
+    // send(np->data,&sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
+    send(np->data,&sendatatoserverlen,sizeof(int),0);
+    // send(np->data,sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
+    send_throughsocket(sendmainmessage,sendatatoserverlen,np->data);
+    // send(np->data,test12,sizeof(char*),0);
+    }
+
+
+    else if (parsedcommand.command_name=="logout")
+    {
+      sendatatoserverlen = strlen(sendmainmessage);
+      send(np->data,&sendatatoserverlen,sizeof(int),0);
+      send_throughsocket(sendmainmessage,sendatatoserverlen,np->data);
+    }
+
+    else if (parsedcommand.command_name=="delete")
+    {
+      sendatatoserverlen = strlen(sendmainmessage);
+      send(np->data,&sendatatoserverlen,sizeof(int),0);
+      send_throughsocket(sendmainmessage,sendatatoserverlen,np->data);
+    }
 
 
     }
