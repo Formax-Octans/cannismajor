@@ -63,6 +63,20 @@ ClientList *root, *now;
 
 
 
+
+void stringtochar(char arra[],string ar1)
+{
+  int length = ar1.length();
+  std::cout << "Thats the wau i likeit" << '\n';
+  for (int i = 0; i < length; i++)
+  {
+    arra[i] = ar1[i];
+    printf("%c",arra[i]);
+
+  }
+  arra[length] = '\0';
+}
+
 string chartostring(char arra[],int n0)
 {
   string str1="";
@@ -142,11 +156,11 @@ dataset parser(string command)
     vector<string> words;
     words = split(command," ");
     int n = words.size();
-    std::cout << "  n"<<n << '\n';
-    for (int i = 0;i<n;i++)
-    {
-        cout << words[i] << endl;
-    }
+    // std::cout << "  n"<<n << '\n';
+    // for (int i = 0;i<n;i++)
+    // {
+    //     cout << words[i] << endl;
+    // }
     // cout<<"1"<<endl;
     // datset initialisation
     dataset ds;
@@ -306,10 +320,11 @@ string initialview()
 
 
 
-void gotomyslbinder(dataset ds)
+string gotomyslbinder(dataset ds)
 {
 
 MYSQL *con = mysql_init(NULL);
+string str1="";
 
 if (con == NULL)
 {
@@ -357,6 +372,73 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
             /*
             enter the query here for sign_in
             */
+
+    string Username = ds.info1; //pass this string as arguments. comment this
+    string Password = ds.info2; //pass this string as arguments
+
+    cout<<"username received "<<Username<<"1"<<endl;
+    cout<<"Password received "<<Password<<"1"<<endl;
+    std::cout << Username.length() << '\n';
+    std::cout << Password.length() << '\n';
+
+    string query = "SELECT Username, Password FROM UserDB WHERE Username =\"" + Username + "\" AND Password = \""+Password+"\"" ;
+            char queryinchar1[query.length()+1];
+            cout<<"\nSql query:"<<query<<endl;
+            Username = "Brosh_21";
+            Password = "Birth12";
+//            strncpy(queryinchar1,query.c_str(),query.length());
+            // stringtochar(queryinchar1,query);
+            // queryinchar1[query.length()] = '\0';
+
+            // cout<<"\nSql query in character:"<<queryinchar1<<endl;
+            // printf("\n Sql query in char %s",queryinchar1);
+
+            if (mysql_query(con, query.c_str()))
+            // if (mysql_query(con, queryinchar1))
+            {
+                finish_with_error(con);
+            }
+
+            MYSQL_RES *result = mysql_store_result(con);
+
+            query="";
+            if (result == NULL)
+            {
+                finish_with_error(con);
+            }
+
+            int num_fields = mysql_num_fields(result);
+
+            MYSQL_ROW row;
+
+            int found=0;    //0 means not in table
+
+            while ((row = mysql_fetch_row(result)))
+            {
+                // cout<<"\n user: "<<row[0];       //printing table
+
+                if((strcmp(row[0],Username.c_str())==0) && (strcmp(row[1],Password.c_str())==0))
+                {
+                    found=1;
+                    break;
+                }
+            }
+
+            if(found==1)    //if found in table set signin flag = 1;
+            {
+                SIGN_IN_FLAG = 1;
+//                cout<<"\n Logged in. ";
+                str1 = "The username "+ Username +" has successfully logged in ";
+                CURRENT_USERNAME = Username;
+            }
+            else
+                str1 = "\n Incorrect Username or Password.\n ";
+                cout<<"\n Incorrect Username or Password.\n ";
+
+
+
+
+
         }
     }
     else if(c_name.compare("delete")==0)
@@ -371,11 +453,10 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
     else if(c_name.compare("view")==0)
     {
       printf("Birchasgna\n" );
-      string str1="";
 
         if(ds.status == 1)
         {
-          printf("Reachef ehroihflksdng\n" );
+          printf("Reached ehroihflksdng\n" );
 
           if (mysql_query(con, "SELECT Filename FROM FileDB where Flag = 0 ;"))
           {
@@ -411,7 +492,19 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
 
           // return str1;
           // printf("%s\n",str1 );
-            std::cout << str1 << '\n';
+            // std::cout << str1 << '\n';
+
+            // send case
+            // int templenght = str1.length();
+            // char array1[templenght+1] = {"lunda"};
+            // strncpy(array1,str1.c_str(),templenght);
+            // std::cout << "teja machuda later" << '\n';
+            // std::cout << array1 << '\n';
+            // send(localsocket,array1,MAXBUFFERSIEZ,0);
+
+            // std::cout << "Selvarak" << '\n';
+
+
           //check status whethe signed it
 
           mysql_free_result(result);
@@ -424,6 +517,7 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
         printf("NOT FOUND\n");
     }
      mysql_close(con);
+     return str1; //return whatever the answer query is
 
 }
 
@@ -463,13 +557,18 @@ void *client_handler(void *p_client)
     int leave_flag = 0;
     int option_recv = -1;
     char nickname[LENGTH_NAME] = {};
-    char recv_buffer[LENGTH_MSG] = {};
+    char recv_buffer[LENGTH_NAME] = {};
     char send_buffer[LENGTH_SEND] = {};
+    char test12[] ={'a'};
+    test12[0] = 12;
     ClientList *np = (ClientList *)p_client;
-    string sendtofu,intialsenddata;
+    string sendtofu,intialsenddata,sendatatoserver;
+    char sendmainmessage[MAXBUFFERSIEZ];
     struct dataset parsedcommand;
+    int i1 = 0,sendatatoserverlen=0;
+    char c12 = 12;
     printf("\nReached here bruh\n" );
-    intialsenddata = initialview();//tampler with menu
+    intialsenddata = initialview();//tamper with menu
       strcpy(menu, intialsenddata.c_str());
       send(np->data,menu,sizeof(menu),0);
     while (1)
@@ -484,15 +583,82 @@ void *client_handler(void *p_client)
 
 
         sendtofu = chartostring(recv_buffer,strlen(recv_buffer));
-        std::cout << "Recieved buffer " <<sendtofu<< '\n';
+        // std::cout << "Recieved buffer " <<sendtofu<< '\n';
         parsedcommand = parser(sendtofu);
-        std::cout << "1" <<parsedcommand.info1<< '\n';
-        std::cout << "2" <<parsedcommand.info2<< '\n';
-        std::cout << "3" <<parsedcommand.command_name<< '\n';
-        gotomyslbinder(parsedcommand);
+        // std::cout << "1" <<parsedcommand.info1<< '\n';
+        // std::cout << "2" <<parsedcommand.info2<< '\n';
+        // std::cout << "3" <<parsedcommand.command_name<< '\n';
+        // parsedcommand.command_name+=" ";
+        sendatatoserver = gotomyslbinder(parsedcommand);//execute
+
+        // @test begins
+            strncpy(sendmainmessage,sendatatoserver.c_str(),sendatatoserver.length());
+            // for ( int i = 0; i < sendatatoserver.length(); i++)//same as below for loop
+        // for ( int i = 0; sendmainmessage[i]!='\0'; i++)
+        // {
+        //       printf("i= %d  sendmainmessage= %d sendmainmessage= %c  \n",i,sendmainmessage[i],sendmainmessage[i] );
+        //
+        // }
+        if (parsedcommand.command_name=="view")
+        {
+          printf("\nChecked reaahces\n" );
+          fflush(stdin);
+          fflush(stdout);
+        //
+        //     // strncpy(sendmainmessage,sendatatoserver.c_str(),sendatatoserver.size());
+            // strncpy(sendmainmessage,sendatatoserver.c_str(),sendatatoserver.length());
+        //
+        //     // sendmainmessage[0] = "h";sendmainmessage[1] = "o";
+        //     // std::cin >> sendmainmessage;
+        //     // std::cout << sendmainmessage << '\n';
+        //     sendatatoserverlen = sendatatoserver.length();
+        //     std::cout << "The length of sgring "<<sendatatoserverlen << '\n';
+        //     send(np->data,&sendatatoserverlen,sizeof(int),0);
+        //
+        //     // write(np->data,test12,LENGTH_NAME);
+        //
+        //     while ((c12 = sendmainmessage[i1++])!='\0')
+        //     {
+        //       std::cout << "Tset"<<c12 << '\n';
+        //       // send(np->data,&c12,sizeof(char),0);
+        //       write(np->data,&c12,sizeof(char));
+        //
+        //
+        //     }
+        //     // write(np->data,)
+        //     printf("again check\n" );
+        //
+        //
+
         // if(ifyoufail()==1){dont();}
 
+
+        //clear buffer
+
+        send(np->data,&c12,sizeof(char),0);
+        send(np->data,sendmainmessage,MAXBUFFERSIEZ,0);
+        // send(np->data,test12,sizeof(char*),0);
+      }
+      else if (parsedcommand.command_name=="view")
+      {
+        printf("\nChecked reaahces\n" );
+        fflush(stdin);
+        fflush(stdout);
+
+
+      //clear buffer
+
+      send(np->data,&c12,sizeof(char),0);
+      send(np->data,sendmainmessage,MAXBUFFERSIEZ,0);
+      // send(np->data,test12,sizeof(char*),0);
     }
+
+
+
+    }
+
+
+
 
     pthread_exit(0);
 
