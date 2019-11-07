@@ -73,30 +73,39 @@ int main(int argc, char *argv[])
     gettimeofday(&start1, NULL);
     //also keep track of the amount of data sent as well
     int bytesRead, bytesWritten = 0;
+    int correct = 1;
       fstream f2;
-    f2.open("New.mp4", ios::out);
+    recv(newSd,&correct,sizeof(int),0);
+
+//    f2.open("New.mp4", ios::out);
+
     char ch;
-    while((recv(newSd, &ch, sizeof(ch), 0)>0))
-    {
-        //receive a message from the client (listen)
-        //cout << "Awaiting client response..." << endl;
-       // memset(&msg, 0, sizeof(msg));//clear the buffer
-        // bytesRead += recv(newSd, &ch, sizeof(ch), 0);
-        // if(ch =='{')			//(!strcmp(msg, "exit"))
-        // {
-        //     cout << "Client has quit the session" << endl;
-        //     break;
-        // }
-        
-		//char ch;
-	
-		//insert received data in file2
-		//ch = msg[0];
-		f2.put(ch);
-		//f2<<msg;
-		
+
+    if(correct == 1) {
+        f2.open("clien3t.cpp", ios::out);
+
+        while ((recv(newSd, &ch, sizeof(ch), 0) > 0)) {
+            //receive a message from the client (listen)
+            //cout << "Awaiting client response..." << endl;
+            // memset(&msg, 0, sizeof(msg));//clear the buffer
+            // bytesRead += recv(newSd, &ch, sizeof(ch), 0);
+            // if(ch =='{')			//(!strcmp(msg, "exit"))
+            // {
+            //     cout << "Client has quit the session" << endl;
+            //     break;
+            // }
+
+            //char ch;
+
+            //insert received data in file2
+            //ch = msg[0];
+            f2.put(ch);
+            //f2<<msg;
+
+        }
+        cout << "\n file received \n";
+
     }
-    cout<<"\n file received \n";
     f2.close();
     //we need to close the socket descriptors after we're all done
     gettimeofday(&end1, NULL);

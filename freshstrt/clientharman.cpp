@@ -18,7 +18,10 @@
 #include "proto.h"
 #include "string.h"
 #include <iostream>
+#include <fstream>
+
 #include <vector>
+#include <algorithm>
 // Global variables
 using namespace std;
 volatile sig_atomic_t flag = 0;/////fuck
@@ -45,7 +48,8 @@ int sockfd = 0;
 
 char nickname[LENGTH_NAME] = {};
 
-
+int SIGN_IN_FLAG = 0;
+string CURRENT_USERNAME = "";
 
 
 void SHOW_BASE_DES()
@@ -131,6 +135,7 @@ dataset parserprinter(string command,int locaksocket1)
         ds.info2 = words[2];
         ds.command_name = "upload";
         ds.status = 1;
+        // std::cout << "I am not yaar " << '\n';
     }
     else if(words[0].compare("download")==0)
     {
@@ -245,6 +250,159 @@ int recv_throughsocket(char arr1[],int lenght,int sockfd1)
 
 
 
+void filter(vector<string> v)
+{
+    vector<string> images;
+    vector<string> videos;
+    vector<string> audios;
+    vector<string> documents;
+    vector<string> pdf;
+
+    vector<string> others;
+    vector<string> out;
+    int n = v.size();
+    for(int i = 0;i<n;i++)
+    {
+        out = split(v[i],".");
+        if(out[1].compare("txt")==0)
+        {
+            documents.push_back(v[i]);
+        }
+        else if(out[1].compare("pdf")==0)
+        {
+            pdf.push_back(v[i]);
+        }
+        else if(out[1].compare("mp4")==0)
+        {
+            videos.push_back(v[i]);
+        }
+        else if(out[1].compare("mp3")==0)
+        {
+            audios.push_back(v[i]);
+        }
+        else if(out[1].compare("png")==0 || out[1].compare("jpeg")==0 || out[1].compare("jpg")==0 || out[1].compare("bmp")==0)
+        {
+            images.push_back(v[i]);
+        }
+        else
+        {
+            others.push_back(v[i]);
+        }
+    }
+    //print in terminal
+    int l = 6;
+    int u = 10;
+    cout<<"\033["<<l-5<<";1H\033[1;42m###################################################################################################################################\033[0m"<<endl;
+    cout<<"\033["<<l-4<<";1H\033[1;42m#############                                                                                                           ###########\033[0m"<<endl;
+    cout<<"\033["<<l-3<<";1H\033[1;42m#############                                                 NIMBUS                                                    ###########\033[0m"<<endl;
+    cout<<"\033["<<l-2<<";1H\033[1;42m#############                                                                                                           ###########\033[0m"<<endl;
+    cout<<"\033["<<l-1<<";1H\033[1;42m###################################################################################################################################\033[0m"<<endl;
+
+    cout<<"\033["<<l+3<<";1HIMAGES"<<"\033["<<l+3<<";25HVIDEOS"<<"\033["<<l+3<<";50HDOCUMENTS"<<"\033["<<l+3<<";75HPDF"<<"\033["<<l+3<<";100HAUDIO"<<"\033["<<l+3<<";125HOTHER"<<endl;
+    cout<<"\033["<<l+4<<";1H_______"<<"\033["<<u<<";25H________"<<"\033["<<u<<";50H_______________"<<"\033["<<u<<";75H______"<<"\033["<<u<<";100H_________"<<"\033["<<u<<";125H___________"<<endl;
+    cout<<"\033["<<l+1<<";1HWelcome to public shared storage!:"<<endl;
+    int isize= images.size();
+    int vsize= videos.size();
+    int dsize= documents.size();
+    int psize= pdf.size();
+    int asize= audios.size();
+    int osize= others.size();
+
+    vector<int> sizes{isize,vsize,dsize,psize,asize,osize};
+    sort(sizes.begin(), sizes.end());
+    int mx_lim = sizes[5];
+    // for(int i = 0;i<sizes[0];i++)
+    // {
+    //     cout << images[i]<<"/t"<<videos[i] <<"/t"<<documents[i]<<"/t"<<pdf[i]<<"/t"<< audios[i]<<"/t"<<others[i]<< endl;
+
+    // }
+    int s = 11;
+    int num = s;
+
+        for(int i = 0;i<isize && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";1H"<<images[i]<<endl;
+        }
+        num = s;
+        for(int i = 0;i<vsize && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";25H"<<videos[i]<<endl;
+        }
+        num = s;
+        for(int i = 0;i<dsize && i < 10 ;i++)
+        {
+
+            cout<<"\033["<<num+i<<";50H"<<documents[i]<<endl;
+        }
+        num = s;
+        for(int i = 0;i<psize && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";75H"<<pdf[i]<<endl;
+        }
+        num = s;
+        for(int i = 0;i<asize && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";100H"<<audios[i]<<endl;
+        }
+        num = s;
+        for(int i = 0;i<osize && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";125H"<<others[i]<<endl;
+        }
+    int b = 22;
+    cout<<"\033["<<b  <<";1H\033[1;32m>>$To create a private ACCOUNT use : 'account username password'\033[0m"<<endl;
+    cout<<"\033["<<b+1<<";1H\033[1;32m>>$To UPLOAD use                   : 'upload filename extension'\033[0m"<<endl;
+    cout<<"\033["<<b+2<<";1H\033[1;32m>>$To DOWNLOAD use                 : 'download filename extension'\033[0m"<<endl;
+    cout<<"\033["<<b+3<<";1H\033[1;32m>>$To SIGN IN use                  : 'sign_in username password'\033[0m"<<endl;
+    cout<<"\033["<<b+4<<";1H\033[1;32m>>$To view use                     : 'view'\033[0m"<<endl;
+    cout<<"\033["<<b+4<<";1H\033[1;32m>>$To delete use                   : 'delete filename .extension'\033[0m"<<endl;
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void catch_ctrl_c_and_exit(int sig) {
     flag = 1;
 }
@@ -309,26 +467,40 @@ int main(int argc, char const *argv[])
     string inoputstring;
     struct dataset parsedcommand;
     char recievemainmessage[MAXBUFFERSIEZ];
-    char c1;
+    int c1;
     string recievemainmessagestr="";
     int recievemainmessagestrlength= 0;
     int flagtemp=0,sizecommand1;
     int receivemenulength1;
+    int usernamelenth;
+    int found11 = -1;
+    string fielname= "";
+    string fielname2= "";
+
     //recieving menu
     SHOW_BASE_DES();//basic design
     // std::cout << "----------------------------WELCOME TO DROPSHIT-----------------------" << '\n'<<endl<<endl;
     recv(sockfd,&receivemenulength1,sizeof(int),0 );
     // recv(sockfd,menu,sizeof(char)*receivemenulength1,0 );
-    std::cout << "menu leght"<<receivemenulength1 << '\n';
+    // std::cout << "menu leght"<<receivemenulength1 << '\n';
     recv_throughsocket(menu,receivemenulength1,sockfd);
+    std::vector<string> v1 = split(menu,"\n");
+    filter(v1);
+    // printf("\n%s\n",menu);
 
-    printf("\n%s\n",menu);
     while (1)
     {
           printf(">> " );
+          // cin.flush();
           cin.getline(inoput,MAXBUFFERSIEZ);
           // send(sockfd, inoput, sizeof(inoput), 0);
           sizecommand1 = strlen(inoput);
+          if (sizecommand1<4)
+          {
+            system("clear");
+            printf("\n" );
+            continue;
+          }
           send(sockfd, &sizecommand1, sizeof(int), 0);
 
           // send(sockfd, inoput, sizecommand1*sizeof(char), 0);
@@ -343,6 +515,13 @@ int main(int argc, char const *argv[])
 
           inoputstring = chartostring(inoput,strlen(inoput));
           parsedcommand = parserprinter(inoputstring,sockfd);
+          // std::cout << "INput string" << '\n';
+          // std::cout << inoputstring << '\n';
+          // std::cout << "parsedcommand" << '\n';
+          // std::cout << parsedcommand.info1 << '\n';
+          // std::cout << parsedcommand.command_name << '\n';
+          // std::cout << parsedcommand.info2 << '\n';
+          // std::cout << parsedcommand.status << '\n';
           if (parsedcommand.command_name=="view")
           {
             fflush(stdin);
@@ -379,8 +558,9 @@ int main(int argc, char const *argv[])
               recv_throughsocket(recievemainmessage,recievemainmessagestrlength,sockfd);
 
 
-              std::cout << "\n\nFollowing public FIles" << '\n';
-              std::cout << recievemainmessage << '\n';
+              // std::cout << recievemainmessage << '\n';
+              v1 = split(chartostring(recievemainmessage,recievemainmessagestrlength),"\n");
+              filter(v1);
               // for (int i = 0; recievemainmessage[i]!='\0'; i++)
               // {
               //
@@ -432,7 +612,18 @@ int main(int argc, char const *argv[])
               //       break;
               //     }
               //
+
+
               // }
+
+              recv(sockfd,&SIGN_IN_FLAG,sizeof(int),0);
+              recv(sockfd,&usernamelenth,sizeof(int),0);
+              char tempstring12[usernamelenth+1];
+              recv_throughsocket(tempstring12,usernamelenth,sockfd);
+              // strcpy(CURRENT_USERNAME,tempstring12.c_str());
+              CURRENT_USERNAME = chartostring(tempstring12,usernamelenth);
+
+
               recv(sockfd,&recievemainmessagestrlength,sizeof(int),0);
               // recv(sockfd,recievemainmessage,recievemainmessagestrlength*sizeof(char),0);
               recv_throughsocket(recievemainmessage,recievemainmessagestrlength,sockfd);
@@ -441,6 +632,8 @@ int main(int argc, char const *argv[])
               std::cout << "\n\nSign in message" << '\n';
               std::cout << "the message length received " << recievemainmessagestrlength<<'\n';
               std::cout << recievemainmessage << '\n';
+              std::cout << "SIGN IN status " << SIGN_IN_FLAG<<'\n';
+              std::cout << "CUURENT USSERNIGGA " <<CURRENT_USERNAME<< '\n';
 
           //
           }
@@ -462,6 +655,9 @@ int main(int argc, char const *argv[])
           }
           else if (parsedcommand.command_name=="logout")
           {
+
+            recv(sockfd,&SIGN_IN_FLAG,sizeof(int),0);
+
               recv(sockfd,&recievemainmessagestrlength,sizeof(int),0);
               // recv(sockfd,recievemainmessage,recievemainmessagestrlength*sizeof(char),0);
               recv_throughsocket(recievemainmessage,recievemainmessagestrlength,sockfd);
@@ -479,6 +675,99 @@ int main(int argc, char const *argv[])
 
               // std::cout << "the message length received " << recievemainmessagestrlength<<'\n';
               std::cout << recievemainmessage << '\n';
+          }
+          else if (parsedcommand.command_name=="upload")
+          {
+            int tempo;//for checking whether the file exist
+            std::cout << "Reached upload" << '\n';
+            recv(sockfd,&found11,sizeof(int),0);
+            std::cout << found11 << '\n';
+            // cin.getline(fielname,MAXBUFFERSIEZ);
+            // char c[10240];
+            if(found11 == 1)
+            {
+              std::cout << "File name already exists try again" << '\n';
+            }
+            else
+            {
+              std::cout << "\nENTER THE PATH OF FILE" << '\n';
+              std::cin >> fielname;
+              // std::cin >> fielname2;
+
+              // scanf("%s",fielname);
+              // fielname+=".txt";
+              // fielname = fielname+"."+fielname2;
+              std::cout << fielname << '\n';
+              char fielnae1[fielname.length()+1] ;
+              strcpy(fielnae1,fielname.c_str());
+
+
+              fstream f1;
+              char ch23;
+              int bytesRead, bytesWritten = 0;
+
+              f1.open(fielnae1, ios::in | ios::binary);
+              tempo = f1.fail();
+              send(sockfd,&tempo,sizeof(int),0);
+
+              if (tempo)
+              {
+                        std::cout << "No such file" << '\n';
+              }
+
+              else
+              {
+
+                  while(!f1.eof())
+                  {
+
+                   ch23 = f1.get();
+
+                   bytesWritten +=send(sockfd, &ch23, sizeof(ch23),0); //strlen(ch23)
+
+                 }
+                 ch23 = 3;
+                 send(sockfd, &ch23, sizeof(ch23),0); //strlen(ch23)
+                  cout<<"\n File sended successfully. \n";
+
+              }
+
+
+              f1.close();
+
+              sleep(3);
+
+
+
+            //   FILE *fp1;
+            // fp1 = fopen(fielnae1,"r");
+            // string sendfielthrougvar="";
+            // int seizofsendfielthroughvar = 0;
+          	// while ((c1= fgetc(fp1))!=EOF)
+        	  //    {
+      			// 		// write(sockfd,&c1,sizeof(int));
+            //     // std::cout << "check" << '\n';
+            //     // std::cout << c1 << '\n';
+            //     // printf("%c\n",c1);
+            //     sendfielthrougvar +=c1;
+          	//    }
+            //   fclose(fp1);
+          	//     seizofsendfielthroughvar = sendfielthrougvar.length();
+            //     char sendfielthrougvarchar[seizofsendfielthroughvar+1];
+            //   send(sockfd,&seizofsendfielthroughvar,sizeof(int),0);
+            //   strcpy(sendfielthrougvarchar,sendfielthrougvar.c_str());
+            //   send_throughsocket(sendfielthrougvarchar,seizofsendfielthroughvar,sockfd);
+            //
+
+
+
+
+            }
+
+
+
+
+
           }
 
           else if (parsedcommand.command_name=="clear")

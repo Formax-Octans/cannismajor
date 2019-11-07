@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
     cout << "Connected to the server!" << endl;
     int bytesRead, bytesWritten = 0;
     int correct = 1;
-    int chec=4;
     struct timeval start1, end1;
     gettimeofday(&start1, NULL);
         
@@ -54,13 +53,13 @@ int main(int argc, char *argv[])
 	char ch;
 	
 //	f1.open("A.mp4", ios::in | ios::binary);
-    f1.open("client1.cpp", ios::in | ios::binary);
+    f1.open("client.cpp", ios::in | ios::binary);
 
-    if (chec = f1.fail())
+    if (f1.fail())
     {
         printf("no such files");
         correct = 0;
-        cout<<chec<<"bruh";
+
     }
     send(clientSd,&correct, sizeof(int),0);
     if(correct==1)
@@ -103,3 +102,4 @@ int main(int argc, char *argv[])
     cout << "Connection closed" << endl;
     return 0;    
 }
+ÿ
