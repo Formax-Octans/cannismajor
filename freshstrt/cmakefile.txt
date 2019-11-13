@@ -6,4 +6,5 @@ g++ harmanserver.cpp -o sever -lpthread  `mysql_config --cflags --libs`
 g++ clientharman.cpp -o clent string.o
 
 
+g++ clientharman.cpp -o clent string.o -lmenu -lncurses
 
