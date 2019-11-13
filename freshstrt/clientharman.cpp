@@ -1,6 +1,9 @@
 #define MAXBUFFERSIEZ 100
 #define MAXFILESIZE 512
 
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#define CTRLD 	4
 //only  for test purpose
 
 #include <stdio.h>
@@ -23,6 +26,37 @@
 #include <vector>
 #include <algorithm>
 // Global variables
+#include <sstream>
+#include <curses.h>
+
+#include <menu.h>
+
+
+char dfile[200];
+
+
+const char *choices[] = {
+                        "Choice 1", "Choice 2", "Choice 3", "Choice 4", "Choice 5",
+			"Choice 6", "Choice 7", "Choice 8", "Choice 9", "Choice 10",
+			"Choice 11", "Choice 12", "Choice 13", "Choice 14", "Choice 15",
+			"Choice 16", "Choice 17", "Choice 18", "Choice 19", "Choice 20",
+                        "Exit",
+                        NULL
+                  };
+const std::string red("\033[0;31m");
+const std::string green("\033[1;32m");
+const std::string yellow("\033[1;33m");
+const std::string cyan("\033[0;36m");
+const std::string magenta("\033[0;35m");
+const std::string reset("\033[0m");
+
+
+
+
+
+
+
+
 using namespace std;
 volatile sig_atomic_t flag = 0;/////fuck
 
@@ -72,6 +106,33 @@ string chartostring(char arra[],int n0)
 // str1 += '\0';
 return str1;
 }
+
+
+
+vector<string> split1(string str)
+{
+	// Used to split string around spaces.
+	istringstream ss(str);
+    vector<string> l;
+	// Traverse through all words
+	do {
+		// Read a word
+		string word;
+		ss >> word;
+
+		// Print the read word
+		cout << word << endl;
+    l.push_back(word);
+
+
+		// While there is more to read
+	} while (ss);
+
+    return l;
+}
+
+
+
 
 
 
@@ -252,6 +313,7 @@ int recv_throughsocket(char arr1[],int lenght,int sockfd1)
 
 void filter(vector<string> v)
 {
+  system("clear");
     vector<string> images;
     vector<string> videos;
     vector<string> audios;
@@ -355,12 +417,20 @@ void filter(vector<string> v)
             cout<<"\033["<<num+i<<";125H"<<others[i]<<endl;
         }
     int b = 22;
-    cout<<"\033["<<b  <<";1H\033[1;32m>>$To create a private ACCOUNT use : 'account username password'\033[0m"<<endl;
-    cout<<"\033["<<b+1<<";1H\033[1;32m>>$To UPLOAD use                   : 'upload filename extension'\033[0m"<<endl;
-    cout<<"\033["<<b+2<<";1H\033[1;32m>>$To DOWNLOAD use                 : 'download filename extension'\033[0m"<<endl;
-    cout<<"\033["<<b+3<<";1H\033[1;32m>>$To SIGN IN use                  : 'sign_in username password'\033[0m"<<endl;
-    cout<<"\033["<<b+4<<";1H\033[1;32m>>$To view use                     : 'view'\033[0m"<<endl;
-    cout<<"\033["<<b+4<<";1H\033[1;32m>>$To delete use                   : 'delete filename .extension'\033[0m"<<endl;
+    // cout<<"\033["<<b  <<";1H\033[1;32m>>$To create a private ACCOUNT use : 'account username password'\033[0m"<<endl;
+    // cout<<"\033["<<b+1<<";1H\033[1;32m>>$To UPLOAD use                   : 'upload filename extension'\033[0m"<<endl;
+    // cout<<"\033["<<b+2<<";1H\033[1;32m>>$To DOWNLOAD use                 : 'download filename extension'\033[0m"<<endl;
+    // cout<<"\033["<<b+3<<";1H\033[1;32m>>$To SIGN IN use                  : 'sign_in username password'\033[0m"<<endl;
+    // cout<<"\033["<<b+4<<";1H\033[1;32m>>$To view use                     : 'view'\033[0m"<<endl;
+    // cout<<"\033["<<b+4<<";1H\033[1;32m>>$To delete use                   : 'delete filename .extension'\033[0m"<<endl;
+
+
+    cout<<"\033["<<b  <<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To create a private ACCOUNT use :"<<cyan<< "  'account username password'\033[0m"<<endl;
+    cout<<"\033["<<b+1<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To UPLOAD use                   :"<<cyan<< "  'upload filename extension'\033[0m"<<endl;
+    cout<<"\033["<<b+2<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To DOWNLOAD use                 :"<<cyan<< "  'download filename extension'\033[0m"<<endl;
+    cout<<"\033["<<b+3<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To SIGN IN use                  :"<<cyan<< "  'sign_in username password'\033[0m"<<endl;
+    cout<<"\033["<<b+4<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To view use                     :"<<cyan<< "  'view'\033[0m"<<endl;
+    cout<<"\033["<<b+4<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To delete use                   :"<<cyan<< "  'delete filename .extension'\033[0m"<<endl;
 
   }
 
@@ -560,43 +630,182 @@ int main(int argc, char const *argv[])
 
               // std::cout << recievemainmessage << '\n';
               v1 = split(chartostring(recievemainmessage,recievemainmessagestrlength),"\n");
+              // filter(v1);
+
+
+              char s[1500];
+              strcpy(s,recievemainmessage);
+              // cout<<"\n print s array: "<<s;
+
+
+              string viewlist = chartostring(s,strlen(s));
+            //   printf("\n viewlist: %s",viewlist.c_str());
+                // cout<<"\n viewlist:  "<<viewlist;
+                // cout<<"\n end of viewlist"<<endl;       //printing some values after end of viewlist
+
+              vector<string> choi = split1(viewlist);
+              // cout<<"\n choic carray: "<<endl;
+              int k;
+              for(k = 0;k<choi.size();k++)    //working
+              {
+                choices[k] = choi[k].c_str();
+                // cout<<choices[k]<<" ";
+
+              }
+              choices[k] = NULL;
+                // cout<<choi[i]<<" ";
+
+              cout<<endl;
+
+            // int n = ARRAY_SIZE(s);
+            // for(int i =0;i<n;i++)
+            //   cout<<s[i]<<" ";
+            //   cout<<endl;
+
+
+
+            /*
+                printing properly
+            cout<<"\n Enter choices array: ";
+
+            int n = ARRAY_SIZE(choices);
+            for(int i =0;i<n;i++)
+              cout<<choices[i]<<" ";
+              cout<<endl;
+              */
+
+
+            ITEM **my_items;
+            int c;
+            MENU *my_menu;
+                  WINDOW *my_menu_win;
+                  int n_choices, i;
+
+  /* Initialize curses */
+        initscr();
+        // start_color();
+              cbreak();
+              noecho();
+        keypad(stdscr, TRUE);
+        // init_pair(1, COLOR_RED, COLOR_BLACK);
+        // init_pair(2, COLOR_CYAN, COLOR_BLACK);
+
+        /* Create items */
+              n_choices = ARRAY_SIZE(choices);
+              my_items = (ITEM **)calloc(n_choices, sizeof(ITEM *));
+              for(i = 0; i < n_choices; ++i)
+                      my_items[i] = new_item(choices[i], choices[i]);
+
+        /* Crate menu */
+        my_menu = new_menu((ITEM **)my_items);
+
+        /* Set menu option not to show the description */
+        menu_opts_off(my_menu, O_SHOWDESC);
+
+        /* Create the window to be associated with the menu */
+              my_menu_win = newwin(10, 70, 4, 4);
+              keypad(my_menu_win, TRUE);
+
+        /* Set main window and sub window */
+              set_menu_win(my_menu, my_menu_win);
+              set_menu_sub(my_menu, derwin(my_menu_win, 6, 68, 3, 1));
+        set_menu_format(my_menu, 5, 3);
+        set_menu_mark(my_menu, " * ");
+        refresh();
+
+        /* Print a border around the main window and print a title */
+              char top = '-';
+              char bottom = '-';
+              char right = '|';
+              char left = '|';
+              char corner = '+';
+              // char left
+              // box(my_menu_win, 0,0);
+              wborder(my_menu_win,(int)left, (int)right,(int)top, (int)bottom,(int)corner,(int)corner,(int)corner,(int)corner);
+
+        // attron(COLOR_PAIR(2));
+        /* Make the menu multi valued */
+            menu_opts_off(my_menu, O_ONEVALUE);
+
+          mvprintw(LINES - 4, 0, "Use <SPACE> to select or unselect an item.");
+          mvprintw(LINES - 3, 0, "<ENTER> to see presently selected items(F1 to Exit)");
+        mvprintw(LINES - 2, 0, "Use PageUp and PageDown to scroll");
+        // mvprintw(LINES - 2, 0, "Use Arrow Keys to navigate (F1 to Exit)");
+        // attroff(COLOR_PAIR(2));
+        refresh();
+
+        /* Post the menu */
+        post_menu(my_menu);
+        wrefresh(my_menu_win);
+
+        while((c = wgetch(my_menu_win)) != KEY_F(1))
+        {       switch(c)
+                {	case KEY_DOWN:
+              menu_driver(my_menu, REQ_DOWN_ITEM);
+              break;
+            case KEY_UP:
+              menu_driver(my_menu, REQ_UP_ITEM);
+              break;
+            case KEY_LEFT:
+              menu_driver(my_menu, REQ_LEFT_ITEM);
+              break;
+            case KEY_RIGHT:
+              menu_driver(my_menu, REQ_RIGHT_ITEM);
+              break;
+            case KEY_NPAGE:
+              menu_driver(my_menu, REQ_SCR_DPAGE);
+              break;
+            case KEY_PPAGE:
+              menu_driver(my_menu, REQ_SCR_UPAGE);
+              break;
+
+              case ' ':
+                      menu_driver(my_menu, REQ_TOGGLE_ITEM);
+                      break;
+
+              case 10:	/* Enter */
+                    {	char temp[200];
+                      ITEM **items;
+
+                      items = menu_items(my_menu);
+                      temp[0] = '\0';
+                      for(i = 0; i < item_count(my_menu); ++i)
+                        if(item_value(items[i]) == TRUE)
+                        {	strcat(temp, item_name(items[i]));
+                          strcat(temp, " ");
+                        }
+                      move(20, 0);
+                      clrtoeol();
+                      mvprintw(20, 0, temp);
+                      strcpy(dfile,temp);
+                      refresh();
+          }
+          break;
+              }
+                          wrefresh(my_menu_win);
+            }
+
+        /* Unpost and free all the memory taken up */
+              unpost_menu(my_menu);
+              free_menu(my_menu);
+              for(i = 0; i < n_choices; ++i)
+                      free_item(my_items[i]);
+            endwin();
+
               filter(v1);
-              // for (int i = 0; recievemainmessage[i]!='\0'; i++)
-              // {
-              //
-              //   printf("i= %d  recievemainmessage= %d recievemainmessage= %c  \n",i,recievemainmessage[i],recievemainmessage[i] );
-              //
-              //
-              // }
-            // recievemainmessagestr = chartostring(recievemainmessage,strlen(recievemainmessage));
-            //
-            // std::cout << "\nString format of answer" << '\n';
-            // std::cout << recievemainmessagestr << '\n';
 
-          //     // read(sockfd,recievemainmessage,LENGTH_NAME);
-          //     // read(sockfd,recievemainmessage,LENGTH_NAME);
-          //     // read(sockfd,&reDmzfc,sizeof(int));
-          //     // read(sockfd,recievemainmessage,LENGTH_NAME);
-          //
-          //     recv(sockfd,&recievemainmessagestrlength,sizeof(int),0);
-          //     std::cout << "\nRecieved string lenght"<<recievemainmessagestrlength << '\n';
-          //     // while (recv(sockfd,&c1,sizeof(char),0))
-          //     while (read(sockfd,&c1,sizeof(char)))
-          //     {
-          //       std::cout << "c1"<<c1 << '\n';
-          //       recievemainmessagestr+=c1;
-          //       flagtemp++;
-          //       if (flagtemp == recievemainmessagestrlength)
-          //       {
-          //
-          //           break;
-          //       }
-          //       std::cout <<"\nflagtemp " <<flagtemp << '\n';
-          //     }
-          //
-          //
+              cout<<"\n your choice is: "<<dfile;
+              cout<<"\n\n";
 
-          //
+
+
+
+
+
+
+
+
+
           }
 
           else if (parsedcommand.command_name=="sign_in")
@@ -703,7 +912,7 @@ int main(int argc, char const *argv[])
 
 
               fstream f1;
-              char ch23;
+              int ch23;
               int bytesRead, bytesWritten = 0;
 
               f1.open(fielnae1, ios::in | ios::binary);
@@ -726,8 +935,8 @@ int main(int argc, char const *argv[])
                    bytesWritten +=send(sockfd, &ch23, sizeof(ch23),0); //strlen(ch23)
 
                  }
-                 ch23 = 3;
-                 send(sockfd, &ch23, sizeof(ch23),0); //strlen(ch23)
+                 // ch23 = 3;
+                 // send(sockfd, &ch23, sizeof(ch23),0); //strlen(ch23)
                   cout<<"\n File sended successfully. \n";
 
               }
@@ -769,6 +978,14 @@ int main(int argc, char const *argv[])
 
 
           }
+
+          else if (parsedcommand.command_name=="download")
+          {
+
+                printf("Reached download\n" );
+
+          }
+
 
           else if (parsedcommand.command_name=="clear")
           {
