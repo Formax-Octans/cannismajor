@@ -1,11 +1,11 @@
-#include<iostream> 
+#include<iostream>
 #include<stdio.h>
 #include<algorithm>
-#include<string> // for string class 
+#include<string> // for string class
 #include<string.h>
 #include<vector>
 #include<unistd.h>
-using namespace std; 
+using namespace std;
 
 vector<string> split(const string& str, const string& delim)
 {
@@ -25,6 +25,8 @@ vector<string> split(const string& str, const string& delim)
 
 void filter(vector<string> v,vector<string> priv,string usr,int left_str)
 {
+  system("clear");
+
     vector<string> images;
     vector<string> videos;
     vector<string> audios;
@@ -87,8 +89,8 @@ void filter(vector<string> v,vector<string> priv,string usr,int left_str)
     int osize= others.size();
 
     vector<int> sizes{isize,vsize,dsize,psize,asize,osize};
-    sort(sizes.begin(), sizes.end()); 
-    int mx_lim = sizes[5]; 
+    sort(sizes.begin(), sizes.end());
+    int mx_lim = sizes[5];
     // for(int i = 0;i<sizes[0];i++)
     // {
     //     cout << images[i]<<"/t"<<videos[i] <<"/t"<<documents[i]<<"/t"<<pdf[i]<<"/t"<< audios[i]<<"/t"<<others[i]<< endl;
@@ -96,9 +98,9 @@ void filter(vector<string> v,vector<string> priv,string usr,int left_str)
     // }
     int s = 15;
     int num = s;
-    
+
         for(int i = 0;i<isize && i < 10;i++)
-        {   
+        {
 
             cout<<"\033["<<num+i<<";1H"<<images[i]<<endl;
         }
@@ -143,18 +145,24 @@ void filter(vector<string> v,vector<string> priv,string usr,int left_str)
             cout<<"\033["<<num+i<<";125H"<<priv[i]<<endl;
         }
     int b = 30;
-    cout<<"\033["<<b  <<";1H\033[1;32m>>$To create a private ACCOUNT use : 'account username password'\033[0m"<<endl;
-    cout<<"\033["<<b+1<<";1H\033[1;32m>>$To UPLOAD use                   : 'upload filename .extension'\033[0m"<<endl;
-    cout<<"\033["<<b+2<<";1H\033[1;32m>>$To DOWNLOAD use                 : 'download filename .extension'\033[0m"<<endl;
-    cout<<"\033["<<b+3<<";1H\033[1;32m>>$To SIGN IN use                  : 'sign_in username password'\033[0m"<<endl;
-    cout<<"\033["<<b+4<<";1H\033[1;32m>>$To view use                     : 'view'\033[0m"<<endl;
-    cout<<"\033["<<b+4<<";1H\033[1;32m>>$To delete use                   : 'delete filename .extension'\033[0m"<<endl;
+    // cout<<"\033["<<b  <<";1H\033[1;32m>>$To create a private ACCOUNT use : 'account username password'\033[0m"<<endl;
+    // cout<<"\033["<<b+1<<";1H\033[1;32m>>$To UPLOAD use                   : 'upload filename .extension'\033[0m"<<endl;
+    // cout<<"\033["<<b+2<<";1H\033[1;32m>>$To DOWNLOAD use                 : 'download filename .extension'\033[0m"<<endl;
+    // cout<<"\033["<<b+3<<";1H\033[1;32m>>$To SIGN IN use                  : 'sign_in username password'\033[0m"<<endl;
+    // cout<<"\033["<<b+4<<";1H\033[1;32m>>$To view use                     : 'view'\033[0m"<<endl;
+    // cout<<"\033["<<b+4<<";1H\033[1;32m>>$To delete use                   : 'delete filename .extension'\033[0m"<<endl;
+    cout<<"\033["<<b  <<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To create a private ACCOUNT use :"<<cyan<< "  'account username password'\033[0m"<<endl;
+    cout<<"\033["<<b+1<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To UPLOAD use                   :"<<cyan<< "  'upload filename extension'\033[0m"<<endl;
+    cout<<"\033["<<b+2<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To DOWNLOAD use                 :"<<cyan<< "  'download filename extension'\033[0m"<<endl;
+    cout<<"\033["<<b+3<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To SIGN IN use                  :"<<cyan<< "  'sign_in username password'\033[0m"<<endl;
+    cout<<"\033["<<b+4<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To view use                     :"<<cyan<< "  'view'\033[0m"<<endl;
+    cout<<"\033["<<b+4<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To delete use                   :"<<cyan<< "  'delete filename .extension'\033[0m"<<endl;
     }
 
     int main()
 {
     vector<string> vec{"1.txt","2.txt","3.txt","4.txt","5.txt","6.txt","7.txt","8.txt","9.txt","10.txt","two.pdf","sexy.txt","fuck.pdf","mia.mp4","sunny.mp4","addams.mp4","bianca.mp4","ritvik.chu","sot.mp3","chakachk.mp3","love.jpeg","chut.png","parth.txt","boby.mp3","sun.png","moon.bmp","lola.pdf","porn.mp4","maakichu.tja"};
-    
+
     vector<string> pr{"1.txt","2.txt","3.txt","4.txt","5.txt","6.txt","7.txt","8.txt","9.txt","10.txt","two.pdf","sexy.txt","fuck.pdf","mia.mp4","sunny.mp4","addams.mp4","bianca.mp4","ritvik.chu","sot.mp3","chakachk.mp3","love.jpeg","chut.png","parth.txt","boby.mp3","sun.png","moon.bmp","lola.pdf","porn.mp4","maakichu.tja"};
 
     int space = 69;

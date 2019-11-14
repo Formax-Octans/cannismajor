@@ -33,7 +33,7 @@ struct mysqlrturndata
   int SIGN_IN_FLAG ;
   int CURRENTUID ;
   string CURRENT_USERNAME ;
-  // string data;
+  float data;
 };
 
 struct dataset
@@ -516,7 +516,8 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
                     fseek(fp, 0L, SEEK_END);
 
                     // calculating the size of the file
-                    long int filesiez23 = ftell(fp);
+                    // long int filesiez23 = ftell(fp);
+                    float filesiez23 = ftell(fp);
 
                     // closing the file
                     fclose(fp);
@@ -525,7 +526,8 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
 
                     string uidforsql = to_string(ds2->CURRENTUID);
 
-
+                    std::cout << "\n\n\n File size\n" << '\n';
+                    std::cout << filesiez23 << '\n';
                     // {
                     //   // fwrite(ci,sizeof(c),1,fp2);
                     //   fputc(c1,fp2);
@@ -545,11 +547,25 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
                     // }
                     //
                     //
+                    string query2 = "";
+                    float new_mem = 0;
+                    string new_mems = "";
                     // fclose(fp2);
                     //INSERT INTO FileDB (Filename,Size,uid,Flag,Fileptr) VALUES ("144.txt",56,3,1,"9.txt");
                     if (ds2->SIGN_IN_FLAG == 1)
                     {
                         query = "INSERT INTO FileDB(Filename,Size,uid,Flag,Fileptr) VALUES (\"" + Filename1 + "\","+fielsiez23s+", "+uidforsql+",1,\"" + path +"\")";
+                        new_mem = ds2->data-filesiez23;
+                        std::cout << filesiez23 << '\n';
+                        ds2->data = new_mem;
+                        new_mems = to_string(new_mem);
+                        query2 = "UPDATE UserDB set Memory_left =" +new_mems +"where uid = "+uidforsql;
+                        if (mysql_query(con, query2.c_str()))
+                        // if (mysql_query(con, queryinchar1))
+                        {
+                            finish_with_error(con);
+                        }
+
 
                    }
                     else
@@ -610,7 +626,10 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
   Filename1 = Filename1+"."+Fileformat;
   std::cout << Filename1 << '\n';
   // string query = "SELECT Username, Password FROM UserDB WHERE Username =\"" + Username + "\" AND Password = \""+Password+"\" " ;
-  string query = "SELECT Filename,Fileptr FROM FileDB WHERE Filename =\"" + Filename1 + "\"";
+  if(ds2->SIGN_IN_FLAG!=1)
+    {
+
+        string query = "SELECT Filename,Fileptr FROM FileDB WHERE Filename =\"" + Filename1 + "\"";
 
           if (mysql_query(con, query.c_str()))
           // if (mysql_query(con, queryinchar1))
@@ -631,6 +650,9 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
           MYSQL_ROW row;
           string fileptr = "";
           int found=0;    //0 means not in table
+          int tempo =-1;
+
+
 
           while ((row = mysql_fetch_row(result)))
           {
@@ -643,168 +665,203 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
               }
               fileptr = row[1];
           }
+
           // send(sockfd12,&found,sizeof(int),0);
-          std::cout << "lund "<<fileptr << '\n';
+          std::cout << "check file pointer "<<fileptr << '\n';
           if (fileptr=="")
           {
-            printf("Not files reached\n");
+            printf("No such file \n");
+            str1 = "No such file\n";
+            tempo = 1;
           }
-          // if(found==1)    //if found in table set signin flag = 1;
-          // {
-          //     str1 = "The filename already exists ";
-          //     std::cout << Filename1 << '\n';
-          //     std::cout << found << '\n';
-          //
-          // }
-        /*  else
-              {
-                str1 = "\n File is being added \n ";
 
-                // FILE *fp2 ;
-                string path = SERVERPATH+Filename1;
-                std::cout << "path of server "<<path << '\n';
-                char path1[path.length()+1] ;
-                strcpy(path1,path.c_str());
-                int success1 = -1;
-                int bytesRead, bytesWritten = 0;
-                 fstream f2;
-               // f2.open("New.mp4", ios::out);
-               recv(sockfd12,&success1,sizeof(int),0);
-               if (success1)
-               {
-                std::cout << "Failed "<<" No such file" << '\n';
-                str1 = "Wrong path no such file";
-               }
-              else
-               {
-              f2.open(path1, ios::out);
-
-               int ch23;
-               while((recv(sockfd12, &ch23, sizeof(ch23), 0)>0))
-               {
-
-              printf("%c\n",ch23 );
-              printf("%d\n",ch23 );
-
-              if (ch23==-1)
-              {
-                printf("higaniga%c",ch23 );
-                  break;
-              }
-               f2.put(ch23);
-
-               }
-               cout<<"\n file received \n";
-               f2.close();
+          else
+          {
+            tempo =0;
+            str1 = "\n File is sent  \n ";
+            printf("files found\n");
+            string fielname = fileptr;
+            char fielnae1[fielname.length()+1] ;
+            strcpy(fielnae1,fielname.c_str());
 
 
+            fstream f1;
+            int ch23;
+            int bytesRead, bytesWritten = 0;
+
+            f1.open(fielnae1, ios::in | ios::binary);
+            if (tempo==0)
+            {
+              tempo = f1.fail();
+              printf("check tempo before opening %d",tempo );
+            }
+            else
+            {
+              tempo = 1;
+            }
+            send(sockfd12,&tempo,sizeof(int),0);
+            // recv(sockfd12,&success1,sizeof(int),0);
 
 
+            if (tempo)
+            {
+                      std::cout << "No such file" << '\n';
+            }
 
+            else
+            {
 
-
-
-
-
-                // fprintf(fp2,"%s",buffer);
-                // int recvdataforfiellen = 0;
-                // recv(sockfd12,&recvdataforfiellen,sizeof(int),0);
-                // char dataforfiel[recvdataforfiellen+1];
-                // recv_throughsocket(dataforfiel,recvdataforfiellen,sockfd12);
-                // fp2 = fopen(path1,"w");
-                // while (read(sockfd12,&c1,sizeof(int)))
-
-
-                */
-
-/* Getting file size */
-/*
-                FILE* fp = fopen(path1, "r");
-
-                // // checking if the file exist or not
-                // if (fp == NULL) {
-                // printf("File Not Found!\n");
-                // return -1;
-                // }
-
-                fseek(fp, 0L, SEEK_END);
-
-                // calculating the size of the file
-                long int filesiez23 = ftell(fp);
-
-                // closing the file
-                fclose(fp);
-
-                string fielsiez23s = to_string(filesiez23);
-
-                string uidforsql = to_string(ds2->CURRENTUID);
-
-
-                // {
-                //   // fwrite(ci,sizeof(c),1,fp2);
-                //   fputc(c1,fp2);
-                //   // printf("%c\n",c1 );
-                //   if (c1==13)
-                //   {
-                //     break;
-                //   }
-                // }
-                // std::cout << "check data" << '\n';
-                // std::cout << dataforfiel << '\n';
-                // for (int i = 0; i < recvdataforfiellen; i++)
-                // {
-                //   c1 = dataforfiel[i];
-                //     fputc(c1,fp2);
-                //
-                // }
-                //
-                //
-                // fclose(fp2);
-                //INSERT INTO FileDB (Filename,Size,uid,Flag,Fileptr) VALUES ("144.txt",56,3,1,"9.txt");
-                if (ds2->SIGN_IN_FLAG == 1)
+                while(!f1.eof())
                 {
-                    query = "INSERT INTO FileDB(Filename,Size,uid,Flag,Fileptr) VALUES (\"" + Filename1 + "\","+fielsiez23s+", "+uidforsql+",1,\"" + path +"\")";
+
+                 ch23 = f1.get();
+
+                 bytesWritten +=send(sockfd12, &ch23, sizeof(ch23),0); //strlen(ch23)
 
                }
-                else
-                {
-                    query = "INSERT INTO FileDB(Filename,Size,Flag,Fileptr) VALUES (\"" + Filename1 + "\","+fielsiez23s+", 0,"+"\""+path+"\")";
+               // ch23 = 3;
+               // send(sockfd, &ch23, sizeof(ch23),0); //strlen(ch23)
+                cout<<"\n File sended successfully. \n";
+
+            }
 
 
-                }
+            f1.close();
 
-                        if (mysql_query(con, query.c_str()))
-                        // if (mysql_query(con, queryinchar1))
-                        {
-                            finish_with_error(con);
-                        }
+          }
 
-
-
+                 mysql_free_result(result);
 
 
 
+       }
+
+
+       else
+       {
+         int udi12 ;
+         string udi13 = "-2";
+
+           string query = "SELECT Filename,Fileptr ,uid FROM FileDB WHERE Filename =\"" + Filename1 + "\"";
+
+             if (mysql_query(con, query.c_str()))
+             // if (mysql_query(con, queryinchar1))
+             {
+                 finish_with_error(con);
+             }
+
+             MYSQL_RES *result = mysql_store_result(con);
+
+             // query="";
+             if (result == NULL)
+             {
+                 finish_with_error(con);
+             }
+
+             int num_fields = mysql_num_fields(result);
+             string uid;
+             MYSQL_ROW row;
+             string fileptr = "";
+             int found=0;    //0 means not in table
+             int tempo =-1;
+
+
+
+             while ((row = mysql_fetch_row(result)))
+             {
+                 // cout<<"\n user: "<<row[0];       //printing table
+
+                 if((strcmp(row[0],Filename1.c_str())==0) )
+                 {
+                     found++;
+
+                 }
+                 fileptr = row[1];
+                 // udi12 = stoi(row[2]);
+                 udi13 = (row[2]);
+             }
+             // printf("udi13 = %d\n",udi13 );
+             std::cout << udi13 << '\n';
+             // send(sockfd12,&found,sizeof(int),0);
+             std::cout << "check file pointer "<<fileptr << '\n';
+             if( stoi(udi13)==ds2->CURRENTUID)
+             {
+               if (fileptr=="")
+                 {
+                   printf("No such file \n");
+                   str1 = "No such file\n";
+                   tempo = 1;
+                 }
+
+                 else
+                 {
+                   tempo =0;
+                   str1 = "\n File is sent  \n ";
+                   printf("files found\n");
+                   string fielname = fileptr;
+                   char fielnae1[fielname.length()+1] ;
+                   strcpy(fielnae1,fielname.c_str());
+
+
+                   fstream f1;
+                   int ch23;
+                   int bytesRead, bytesWritten = 0;
+
+                   f1.open(fielnae1, ios::in | ios::binary);
+                   if (tempo==0)
+                   {
+                     tempo = f1.fail();
+                     printf("check tempo before opening %d",tempo );
+                   }
+                   else
+                   {
+                     tempo = 1;
+                   }
+                   send(sockfd12,&tempo,sizeof(int),0);
+                   // recv(sockfd12,&success1,sizeof(int),0);
+
+
+                   if (tempo)
+                   {
+                             std::cout << "No such file" << '\n';
+                   }
+
+                   else
+                   {
+
+                       while(!f1.eof())
+                       {
+
+                        ch23 = f1.get();
+
+                        bytesWritten +=send(sockfd12, &ch23, sizeof(ch23),0); //strlen(ch23)
 
                       }
+                      // ch23 = 3;
+                      // send(sockfd, &ch23, sizeof(ch23),0); //strlen(ch23)
+                       cout<<"\n File sended successfully. \n";
+
+                   }
+
+
+                   f1.close();
+
+                 }
+
+              }
+
+              else
+              {
+                printf("No such file \n");
+                str1 = "No such file\n";
+              }
+
+
+               mysql_free_result(result);
 
 
 
-              }*/
-
-              mysql_free_result(result);
-
-          //     std::cout << "username" <<ds2->CURRENT_USERNAME<< '\n';
-          //     std::cout << "Userid" <<ds2->CURRENTUID<< '\n';
-          // int tempstatus = ds2->SIGN_IN_FLAG;
-          // send(sockfd12,&tempstatus,sizeof(int),0);
-          // int tempstringlegth = Username.length();
-          // send(sockfd12,&tempstringlegth,sizeof(int),0);
-          // char tempstring12[tempstringlegth+1];
-          // strcpy(tempstring12,Username.c_str());
-          // std::cout << " \n test "<<tempstring12 << '\n';
-          // send_throughsocket(tempstring12,tempstringlegth,sockfd12)     ;
-
-
+          }
 
 
       }
@@ -872,7 +929,7 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
 
                  }
                  //see if inserted in table or not
-                 str1 = Username+ " Added successfully \n 1000 is memory I am going to kermit sewerside\n";
+                 str1 = Username+ " Added successfully \n 100 MB\n";
 
              }
              else
@@ -927,7 +984,7 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
     // std::cout << Password.length() << '\n';
 
     // string query = "SELECT Username, Password FROM UserDB WHERE Username =\"" + Username + "\" AND Password = \""+Password+"\" " ;
-    string query = "SELECT Username, Password ,uid FROM UserDB WHERE Username =\"" + Username + "\" AND Password = \""+Password+"\" " ;
+    string query = "SELECT Username, Password ,uid,Memory_left FROM UserDB WHERE Username =\"" + Username + "\" AND Password = \""+Password+"\" " ;
 
             // char queryinchar1[query.length()+1];
             // cout<<"\nSql query:"<<query<<endl;
@@ -969,6 +1026,7 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
                     found=1;
                     uid = row[2];
                     ds2->CURRENTUID = stoi(uid);
+                    ds2->data = stof(row[3]);
                     break;
                 }
             }
@@ -993,6 +1051,9 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
                 std::cout << "Userid" <<ds2->CURRENTUID<< '\n';
             int tempstatus = ds2->SIGN_IN_FLAG;
             send(sockfd12,&tempstatus,sizeof(int),0);
+            float meory = ds2->data;
+            send(sockfd12,&meory,sizeof(float),0);
+
             int tempstringlegth = Username.length();
             send(sockfd12,&tempstringlegth,sizeof(int),0);
             char tempstring12[tempstringlegth+1];
@@ -1197,7 +1258,7 @@ if (mysql_real_connect(con, "localhost", "user12", "34klq*", "nimbus", 0, NULL, 
           //private Files
       if(ds2->SIGN_IN_FLAG == 1)
         {
-          str1+="\n\n\n\nPrivate\n";
+          // str1+="\n\n\n\nPrivate.txt\n";
           if (mysql_query(con, query.c_str()))
           {
               finish_with_error(con);
@@ -1378,6 +1439,7 @@ void *client_handler(void *p_client)
           printf("\nChecked reaahces\n" );
           fflush(stdin);
           fflush(stdout);
+{
         //
         //     // strncpy(sendmainmessage,sendatatoserver.c_str(),sendatatoserver.size());
             // strncpy(sendmainmessage,sendatatoserver.c_str(),sendatatoserver.length());
@@ -1411,6 +1473,7 @@ void *client_handler(void *p_client)
 
         // send(np->data,&c12,sizeof(char),0);
         // send(np->data,&sendmainmessage,sizeof(sendmainmessage),0);
+      }
         sendatatoserverlen = strlen(sendmainmessage);
         // send(np->data,&sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
         // send(np->data,&sendatatoserverlen,sizeof(int),0);
@@ -1420,6 +1483,7 @@ void *client_handler(void *p_client)
         send(np->data,&sendatatoserverlen,sizeof(int),0);
         // send(np->data,sendmainmessage,strlen(sendmainmessage)*sizeof(char),0);
         send_throughsocket(sendmainmessage,sendatatoserverlen,np->data);
+        printf("%s\n",sendmainmessage );
 
         // send(np->data,test12,sizeof(char*),0);
       }

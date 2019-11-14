@@ -1,0 +1,10 @@
+g++ harmanserver.cpp -o sever -lpthread
+g++ myslqtseting.cpp -o version `mysql_config --cflags --libs`
+
+g++ harmanserver.cpp -o sever -lpthread  `mysql_config --cflags --libs`
+
+g++ clientharman.cpp -o clent string.o
+
+
+g++ clientharman.cpp -o clent string.o -lmenu -lncurses
+

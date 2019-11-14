@@ -34,7 +34,6 @@
 
 char dfile[200];
 
-
 const char *choices[] = {
                         "Choice 1", "Choice 2", "Choice 3", "Choice 4", "Choice 5",
 			"Choice 6", "Choice 7", "Choice 8", "Choice 9", "Choice 10",
@@ -84,6 +83,8 @@ char nickname[LENGTH_NAME] = {};
 
 int SIGN_IN_FLAG = 0;
 string CURRENT_USERNAME = "";
+float MEMORY_LET = -1;
+string download_path = "/home/i7-workstation/Desktop/mainpro/cannismajor/freshstrt/clientfiels/";
 
 
 void SHOW_BASE_DES()
@@ -300,7 +301,141 @@ int recv_throughsocket(char arr1[],int lenght,int sockfd1)
 
 
 
+void filter1(vector<string> v,vector<string> priv,string usr,int left_str)
+{
+  system("clear");
 
+    vector<string> images;
+    vector<string> videos;
+    vector<string> audios;
+    vector<string> documents;
+    vector<string> pdf;
+
+    vector<string> others;
+    vector<string> out;
+    int n = v.size();
+    for(int i = 0;i<n;i++)
+    {
+        out = split(v[i],".");
+        if(out[1].compare("txt")==0)
+        {
+            documents.push_back(v[i]);
+        }
+        else if(out[1].compare("pdf")==0)
+        {
+            pdf.push_back(v[i]);
+        }
+        else if(out[1].compare("mp4")==0)
+        {
+            videos.push_back(v[i]);
+        }
+        else if(out[1].compare("mp3")==0)
+        {
+            audios.push_back(v[i]);
+        }
+        else if(out[1].compare("png")==0 || out[1].compare("jpeg")==0 || out[1].compare("jpg")==0 || out[1].compare("bmp")==0)
+        {
+            images.push_back(v[i]);
+        }
+        else
+        {
+            others.push_back(v[i]);
+        }
+    }
+    //print in terminal
+    int l = 6;
+    int u = 10;
+    cout<<"\033["<<l-5<<";1H\033[1;42m###################################################################################################################################\033[0m"<<endl;
+    cout<<"\033["<<l-4<<";1H\033[1;42m#############                                                                                                           ###########\033[0m"<<endl;
+    cout<<"\033["<<l-3<<";1H\033[1;42m#############                                                 NIMBUS                                                    ###########\033[0m"<<endl;
+    cout<<"\033["<<l-2<<";1H\033[1;42m#############                                                                                                           ###########\033[0m"<<endl;
+    cout<<"\033["<<l-1<<";1H\033[1;42m###################################################################################################################################\033[0m"<<endl;
+
+    cout<<"\033["<<l+5<<";1HIMAGES"<<"\033["<<l+5<<";20HVIDEOS"<<"\033["<<l+5<<";40HDOCUMENTS"<<"\033["<<l+5<<";60HPDF"<<"\033["<<l+5<<";80HAUDIO"<<"\033["<<l+5<<";100HOTHER"<<"\033["<<l+5<<";120H|"<<"\033["<<l+5<<";125HPRIVATE"<<endl;
+
+    cout<<"\033["<<l+6<<";1H________________________________________________________________________________________________________________________________________"<<endl;
+
+    //cout<<"\033["<<l+6<<";1H_______"<<"\033["<<l+6<<";15H________"<<"\033["<<l+6<<";25H_________"<<"\033["<<l+6<<";35H______"<<"\033["<<l+6<<";45H_______"<<"\033["<<l+6<<";55H_________"<<endl;
+    cout<<"\033["<<l+1<<";1HWelcome to your private storage!:"<<endl;
+    cout<<"\033["<<l+2<<";HUsername : "<<usr<< endl;
+    cout<<"\033["<<l+3<<";1HSTORAGE LEFT:"<<left_str<<endl;
+    int isize= images.size();
+    int vsize= videos.size();
+    int dsize= documents.size();
+    int psize= pdf.size();
+    int asize= audios.size();
+    int osize= others.size();
+
+    vector<int> sizes{isize,vsize,dsize,psize,asize,osize};
+    sort(sizes.begin(), sizes.end());
+    int mx_lim = sizes[5];
+    // for(int i = 0;i<sizes[0];i++)
+    // {
+    //     cout << images[i]<<"/t"<<videos[i] <<"/t"<<documents[i]<<"/t"<<pdf[i]<<"/t"<< audios[i]<<"/t"<<others[i]<< endl;
+
+    // }
+    int s = 15;
+    int num = s;
+
+        for(int i = 0;i<isize && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";1H"<<images[i]<<endl;
+        }
+        num = s;
+        for(int i = 0;i<vsize && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";20H"<<videos[i]<<endl;
+        }
+        num = s;
+        for(int i = 0;i<dsize && i < 10 ;i++)
+        {
+
+            cout<<"\033["<<num+i<<";40H"<<documents[i]<<endl;
+        }
+        num = s;
+        for(int i = 0;i<psize && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";60H"<<pdf[i]<<endl;
+        }
+        num = s;
+        for(int i = 0;i<asize && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";80H"<<audios[i]<<endl;
+        }
+        num = s;
+        for(int i = 0;i<osize && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";100H"<<others[i]<<endl;
+        }
+        for(int i = 0;i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";120H"<<"|"<<endl;
+        }
+        for(int i = 0;i < priv.size() && i < 10;i++)
+        {
+
+            cout<<"\033["<<num+i<<";125H"<<priv[i]<<endl;
+        }
+    int b = 30;
+    // cout<<"\033["<<b  <<";1H\033[1;32m>>$To create a private ACCOUNT use : 'account username password'\033[0m"<<endl;
+    // cout<<"\033["<<b+1<<";1H\033[1;32m>>$To UPLOAD use                   : 'upload filename .extension'\033[0m"<<endl;
+    // cout<<"\033["<<b+2<<";1H\033[1;32m>>$To DOWNLOAD use                 : 'download filename .extension'\033[0m"<<endl;
+    // cout<<"\033["<<b+3<<";1H\033[1;32m>>$To SIGN IN use                  : 'sign_in username password'\033[0m"<<endl;
+    // cout<<"\033["<<b+4<<";1H\033[1;32m>>$To view use                     : 'view'\033[0m"<<endl;
+    // cout<<"\033["<<b+4<<";1H\033[1;32m>>$To delete use                   : 'delete filename .extension'\033[0m"<<endl;
+    cout<<"\033["<<b  <<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To create a private ACCOUNT use :"<<cyan<< "  'account username password'\033[0m"<<endl;
+    cout<<"\033["<<b+1<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To UPLOAD use                   :"<<cyan<< "  'upload filename extension'\033[0m"<<endl;
+    cout<<"\033["<<b+2<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To DOWNLOAD use                 :"<<cyan<< "  'download filename extension'\033[0m"<<endl;
+    cout<<"\033["<<b+3<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To SIGN IN use                  :"<<cyan<< "  'sign_in username password'\033[0m"<<endl;
+    cout<<"\033["<<b+4<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To view use                     :"<<cyan<< "  'view'\033[0m"<<endl;
+    cout<<"\033["<<b+4<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To delete use                   :"<<cyan<< "  'delete filename .extension'\033[0m"<<endl;
+    }
 
 
 
@@ -431,6 +566,13 @@ void filter(vector<string> v)
     cout<<"\033["<<b+3<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To SIGN IN use                  :"<<cyan<< "  'sign_in username password'\033[0m"<<endl;
     cout<<"\033["<<b+4<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To view use                     :"<<cyan<< "  'view'\033[0m"<<endl;
     cout<<"\033["<<b+4<<";1H\033[1;32m"<<yellow<<">>$ "<<green<<" To delete use                   :"<<cyan<< "  'delete filename .extension'\033[0m"<<endl;
+    if (CURRENT_USERNAME!="")
+    {
+      printf("\n\n\ncurrent username    " );
+      std::cout << CURRENT_USERNAME << "\n";
+      printf("\nCurrent memory   " );
+      std::cout << MEMORY_LET << '\n';
+    }
 
   }
 
@@ -546,7 +688,8 @@ int main(int argc, char const *argv[])
     int found11 = -1;
     string fielname= "";
     string fielname2= "";
-
+    string privaetdaat1 = "";
+    string privaetdaat2 = "";
     //recieving menu
     SHOW_BASE_DES();//basic design
     // std::cout << "----------------------------WELCOME TO DROPSHIT-----------------------" << '\n'<<endl<<endl;
@@ -554,13 +697,15 @@ int main(int argc, char const *argv[])
     // recv(sockfd,menu,sizeof(char)*receivemenulength1,0 );
     // std::cout << "menu leght"<<receivemenulength1 << '\n';
     recv_throughsocket(menu,receivemenulength1,sockfd);
+    std::vector<string> v3;
+    std::vector<string> v2;
     std::vector<string> v1 = split(menu,"\n");
     filter(v1);
     // printf("\n%s\n",menu);
 
     while (1)
     {
-          printf(">> " );
+          printf("\n>> " );
           // cin.flush();
           cin.getline(inoput,MAXBUFFERSIEZ);
           // send(sockfd, inoput, sizeof(inoput), 0);
@@ -596,7 +741,8 @@ int main(int argc, char const *argv[])
           {
             fflush(stdin);
             fflush(stdout);
-            // std::cout << "Utpatang" << '\n';
+            {
+              // std::cout << "Utpatang" << '\n';
           //   bzero((char*)&recievemainmessage,sizeof(recievemainmessage));
               // while(recv(sockfd,recievemainmessage,MAXBUFFERSIEZ,0))
               // {
@@ -623,14 +769,82 @@ int main(int argc, char const *argv[])
               // recv(sockfd,&recievemainmessage,sizeof(recievemainmessage),0);
 
               // }
+            }
               recv(sockfd,&recievemainmessagestrlength,sizeof(int),0);
               // recv(sockfd,recievemainmessage,recievemainmessagestrlength*sizeof(char),0);
               recv_throughsocket(recievemainmessage,recievemainmessagestrlength,sockfd);
 
 
               // std::cout << recievemainmessage << '\n';
-              v1 = split(chartostring(recievemainmessage,recievemainmessagestrlength),"\n");
+                v1 = split(chartostring(recievemainmessage,recievemainmessagestrlength),"\n");
               // filter(v1);
+              // if (SIGN_IN_FLAG==1)
+              // {
+              //   printf("You are logged in \n" );
+              //   // cout<<v1;
+              //   int fagl_close = -2;
+              //   v1 = split(chartostring(recievemainmessage,recievemainmessagestrlength),"\n");
+              //   for (int tom = 0; tom < v1.size(); tom++)
+              //   {
+              //     std::cout << v1[tom] << '\n';
+              //     if (v1[tom].compare("private.txt")==0)
+              //     {
+              //       fagl_close ==1;
+              //
+              //     }
+              //     if (fagl_close==-2)
+              //     {
+              //       privaetdaat1+=v1[tom];
+              //       privaetdaat1+="\n";
+              //
+              //
+              //     }
+              //     if (fagl_close==1)
+              //     {
+              //       if (v1[tom].compare("private.txt")!=0)
+              //       {
+              //         privaetdaat2+=v1[tom];
+              //         privaetdaat2+="\n";
+              //
+              //         /* code */
+              //       }
+              //
+              //
+              //
+              //     }
+              //     // privaetdaat+=v1[tom];
+              //   }
+              //   scanf("%d",&c1);
+              //
+              //   std::cout << privaetdaat1 << '\n';
+              //   scanf("%d",&c1);
+              //
+              //   std::cout << privaetdaat2 << '\n';
+              //   scanf("%d",&c1);
+              //
+              //   v2 = split(privaetdaat1,"\n");
+              //
+              //   // v2 = split(privaetdaat,"private.txt");
+              //
+              //   scanf("%d",&c1);
+              //   for (int tom = 0; tom < v1.size(); tom++)
+              //   {
+              //     std::cout << v3[tom] << '\n';
+              //
+              //     // privaetdaat+=v1[tom];
+              //   }
+              //
+              //   scanf("%d",&c1);
+              //
+              //   for (int tom = 0; tom < v1.size(); tom++)
+              //   {
+              //     std::cout << v2[tom] << '\n';
+              //     // privaetdaat+=v1[tom];
+              //   }
+              //   scanf("%d",&c1);
+              //
+              //
+              // }
 
 
               char s[1500];
@@ -826,6 +1040,8 @@ int main(int argc, char const *argv[])
               // }
 
               recv(sockfd,&SIGN_IN_FLAG,sizeof(int),0);
+              recv(sockfd,&MEMORY_LET,sizeof(float),0);
+
               recv(sockfd,&usernamelenth,sizeof(int),0);
               char tempstring12[usernamelenth+1];
               recv_throughsocket(tempstring12,usernamelenth,sockfd);
@@ -842,7 +1058,8 @@ int main(int argc, char const *argv[])
               std::cout << "the message length received " << recievemainmessagestrlength<<'\n';
               std::cout << recievemainmessage << '\n';
               std::cout << "SIGN IN status " << SIGN_IN_FLAG<<'\n';
-              std::cout << "CUURENT USSERNIGGA " <<CURRENT_USERNAME<< '\n';
+              std::cout << "CUURENT USSERNAME " <<CURRENT_USERNAME<< '\n';
+              std::cout << "CUURENT memory left " <<MEMORY_LET<< '\n';
 
           //
           }
@@ -874,6 +1091,8 @@ int main(int argc, char const *argv[])
 
               std::cout << "the message length received " << recievemainmessagestrlength<<'\n';
               std::cout << recievemainmessage << '\n';
+              CURRENT_USERNAME = "";
+              MEMORY_LET = -1;
           }
           else if (parsedcommand.command_name=="delete")
           {
@@ -983,6 +1202,65 @@ int main(int argc, char const *argv[])
           {
 
                 printf("Reached download\n" );
+                string path = "";
+                string nameof = "";
+                int checkclientfolder = -1;
+                // std::cout << "path of server "<<path << '\n';
+                nameof = parsedcommand.info1+"."+parsedcommand.info2;
+                path = download_path+parsedcommand.info1+"."+parsedcommand.info2;
+                        printf("\nCheck name=\n" );
+                        std::cout << nameof << '\n';
+                        std::cout << path << '\n';
+                char path1[path.length()+1] ;
+                strcpy(path1,path.c_str());
+                int success1 = -1;
+                int bytesRead, bytesWritten = 0;
+                 fstream f2;
+                 int ch23;
+
+               // f2.open("New.mp4", ios::out);
+               recv(sockfd,&success1,sizeof(int),0);
+               if (success1)
+               {
+                std::cout << "Failed "<<" No such file" << '\n';
+               }
+              else
+               {
+              f2.open(path1, ios::out);
+              checkclientfolder = f2.fail();
+
+               while((recv(sockfd, &ch23, sizeof(ch23), 0)>0))
+               {
+
+              // printf("%c\n",ch23 );
+              // printf("%d\n",ch23 );
+
+              if (ch23==-1)
+              {
+                printf("end" );
+                  break;
+              }
+              if (checkclientfolder==0)
+              {
+
+                f2.put(ch23);
+              }
+
+
+               }
+               if (checkclientfolder==0)
+               {
+                 cout<<"\n file received \n";
+               }
+                else{
+                  std::cout << "file already exist" << '\n';
+                }
+               f2.close();
+
+             }
+
+
+
 
           }
 
