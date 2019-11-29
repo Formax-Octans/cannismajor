@@ -620,7 +620,7 @@ void catch_ctrl_c_and_exit(int sig) {
 }
 
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 // int main()
 {
     signal(SIGINT, catch_ctrl_c_and_exit);
@@ -645,6 +645,10 @@ int main(int argc, char const *argv[])
 
     // Socket information
     struct sockaddr_in server_info, client_info;
+    char *serverIp = argv[1];
+
+    struct hostent* host = gethostbyname(serverIp) ;
+
     struct hostent *server;
     int s_addrlen = sizeof(server_info);
     int c_addrlen = sizeof(client_info);
@@ -655,10 +659,11 @@ int main(int argc, char const *argv[])
     server_info.sin_family = AF_INET;
     // server_info.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    server = gethostbyname(argv[1]);
+    // server = gethostbyname(argv[1]);
     // server_info.sin_addr.s_addr = inet_addr("127.0.0.1");
-    bcopy((char *)server->h_addr,  (char *)&server_info.sin_addr.s_addr,  server->h_length);
+    // bcopy((char *)server->h_addr,  (char *)&server_info.sin_addr.s_addr,  server->h_length);
     server_info.sin_port = htons(8888);
+    server_info.sin_addr.s_addr =  inet_addr(inet_ntoa(*(struct in_addr*)*host->h_addr_list));
     // server_info.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     // Connect to Server
@@ -897,7 +902,36 @@ int main(int argc, char const *argv[])
 
   /* Initialize curses */
         initscr();
+
+        init_pair(1,COLOR_BLACK, COLOR_MAGENTA);
+
+
+
+                attron(A_BOLD);
+
+                attron(COLOR_PAIR(1));
+
+                // attron(A_STANDOUT);
+
+                attron(A_UNDERLINE);
+
+
+
+                mvprintw(2, 5, "%s", "NIMBUS");
+
+
+
+                // attroff(A_STANDOUT);
+
+                attroff(A_UNDERLINE);
+
+                attroff(COLOR_PAIR(1));
+
+                attroff(A_BOLD);
+
+
         // start_color();
+
               cbreak();
               noecho();
         keypad(stdscr, TRUE);
