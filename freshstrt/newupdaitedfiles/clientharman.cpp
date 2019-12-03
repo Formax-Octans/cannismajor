@@ -85,13 +85,35 @@ int SIGN_IN_FLAG = 0;
 string CURRENT_USERNAME = "";
 float MEMORY_LET = -1;
 string download_path = "/home/i7-workstation/Desktop/mainpro/cannismajor/freshstrt/clientfiels/";
+string originpath = "";
+char cwd12[256];
+char *chrtempa;
+// std::string originpath = "";
+  if (getcwd(cwd12, sizeof(cwd12)) == NULL)
+    perror("getcwd12() error");
+  else
+    printf("current working directory is: %s\n", cwd12);
+
+chrtempa = get_current_dir_name() ;
+// malloc(sizeof(char))
+printf("%s ",chrtempa);
+free(chrtempa);
+for(int i=0;i<strlen(chrtempa);i++)
+{
+originpath += chrtempa[i];
+}
+//strcpy(originpath,chrtempa.c_str());
+std::cout<<originpath;
+
+
+string download_path = originpath+"/clientfiels/";
 
 
 void SHOW_BASE_DES()
 {
   sleep(5);
   system("clear");
-  std::cout << "----------------------------WELCOME TO DROPSHIT-----------------------" << '\n'<<endl<<endl;
+  std::cout << "----------------------------WELCOME TO DROPBOX-----------------------" << '\n'<<endl<<endl;
 
 }
 
@@ -697,7 +719,7 @@ int main(int argc, char *argv[])
     string privaetdaat2 = "";
     //recieving menu
     SHOW_BASE_DES();//basic design
-    // std::cout << "----------------------------WELCOME TO DROPSHIT-----------------------" << '\n'<<endl<<endl;
+    // std::cout << "----------------------------WELCOME TO DROPBOX-----------------------" << '\n'<<endl<<endl;
     recv(sockfd,&receivemenulength1,sizeof(int),0 );
     // recv(sockfd,menu,sizeof(char)*receivemenulength1,0 );
     // std::cout << "menu leght"<<receivemenulength1 << '\n';
